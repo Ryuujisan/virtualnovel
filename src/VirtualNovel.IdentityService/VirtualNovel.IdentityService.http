@@ -1,0 +1,6 @@
+@VirtualNovel.IdentityService_HostAddress = http://localhost:5033
+
+GET {{VirtualNovel.IdentityService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

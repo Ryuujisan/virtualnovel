@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "vMGgyBOo3lg=",
+  "success": true,
+  "projectFilePath": "/home/dane/Projekty/VirtualNovel/src/VirtualNovel.Contracts/VirtualNovel.Contracts.csproj",
+  "expectedPackageFiles": [
+    "/home/izumi/.nuget/packages/microsoft.aspnetcore.app.ref/10.0.8/microsoft.aspnetcore.app.ref.10.0.8.nupkg.sha512"
+  ],
+  "logs": []
+}

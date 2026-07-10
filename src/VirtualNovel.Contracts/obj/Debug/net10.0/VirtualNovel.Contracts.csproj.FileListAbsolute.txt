@@ -1,0 +1,11 @@
+/home/dane/Projekty/VirtualNovel/src/VirtualNovel.Contracts/bin/Debug/net10.0/VirtualNovel.Contracts.deps.json
+/home/dane/Projekty/VirtualNovel/src/VirtualNovel.Contracts/bin/Debug/net10.0/VirtualNovel.Contracts.dll
+/home/dane/Projekty/VirtualNovel/src/VirtualNovel.Contracts/bin/Debug/net10.0/VirtualNovel.Contracts.pdb
+/home/dane/Projekty/VirtualNovel/src/VirtualNovel.Contracts/obj/Debug/net10.0/VirtualNovel.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+/home/dane/Projekty/VirtualNovel/src/VirtualNovel.Contracts/obj/Debug/net10.0/VirtualNovel.Contracts.AssemblyInfoInputs.cache
+/home/dane/Projekty/VirtualNovel/src/VirtualNovel.Contracts/obj/Debug/net10.0/VirtualNovel.Contracts.AssemblyInfo.cs
+/home/dane/Projekty/VirtualNovel/src/VirtualNovel.Contracts/obj/Debug/net10.0/VirtualNovel.Contracts.csproj.CoreCompileInputs.cache
+/home/dane/Projekty/VirtualNovel/src/VirtualNovel.Contracts/obj/Debug/net10.0/VirtualNovel.Contracts.dll
+/home/dane/Projekty/VirtualNovel/src/VirtualNovel.Contracts/obj/Debug/net10.0/refint/VirtualNovel.Contracts.dll
+/home/dane/Projekty/VirtualNovel/src/VirtualNovel.Contracts/obj/Debug/net10.0/VirtualNovel.Contracts.pdb
+/home/dane/Projekty/VirtualNovel/src/VirtualNovel.Contracts/obj/Debug/net10.0/ref/VirtualNovel.Contracts.dll
