@@ -8,4 +8,10 @@ public sealed class UserDbContext(
     : DbContext(options)
 {
     public DbSet<UserProfile> Users => Set<UserProfile>();
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(
+            typeof(UserDbContext).Assembly);
+    }
 }

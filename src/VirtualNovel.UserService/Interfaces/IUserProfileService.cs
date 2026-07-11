@@ -6,7 +6,7 @@ namespace VirtualNovel.IdentityService.Interfaces;
 
 public interface IUserProfileService
 {
-    Task<UserProfileDto> GetCurrentUserAsync();
+    Task<UserProfileDto> GetCurrentUserAsync(CancellationToken cancellationToken = default);
     Task<UserProfileDto> UpdateCurrentUserAsync(
-        UpdateUserProfileRequest request);
+        UpdateUserProfileRequest request, CancellationToken cancellationToken = default);
 }

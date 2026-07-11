@@ -1,11 +1,14 @@
 using VirtualNovel.BuildingBlocks.Authentication;
 using VirtualNovel.BuildingBlocks.Database;
 using VirtualNovel.IdentityService.Infrastructure.Database;
+using VirtualNovel.IdentityService.Interfaces;
+using VirtualNovel.IdentityService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddFirebaseAuthentication(builder.Configuration);
+builder.Services.AddFirebaseAuthentication(builder.Configuration, builder.Environment);
 builder.Services.AddPostgres<UserDbContext>(builder.Configuration);
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 
 builder.Services.AddControllers();
 
@@ -28,3 +31,8 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 
 app.Run();
+
+namespace VirtualNovel.IdentityService
+{
+    public sealed class AssemblyMarker;
+}

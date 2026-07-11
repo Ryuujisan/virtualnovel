@@ -10,7 +10,8 @@ builder.Services
         builder.Configuration.GetSection("ReverseProxy"));
 
 builder.Services.AddFirebaseAuthentication(
-    builder.Configuration);
+    builder.Configuration,
+    builder.Environment);
 
 var app = builder.Build();
 

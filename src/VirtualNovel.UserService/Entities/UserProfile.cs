@@ -7,6 +7,6 @@ public sealed class UserProfile
     public string DisplayName { get; set; } = string.Empty;
     public string? Bio { get; set; }
     public string? AvatarUrl { get; set; }
-    public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset UpdatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 }
