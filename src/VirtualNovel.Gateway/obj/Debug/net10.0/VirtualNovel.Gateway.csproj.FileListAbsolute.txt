@@ -1,6 +1,0 @@
-/home/dane/Projekty/VirtualNovel/src/VirtualNovel.Gateway/obj/Debug/net10.0/rpswa.dswa.cache.json
-/home/dane/Projekty/VirtualNovel/src/VirtualNovel.Gateway/obj/Debug/net10.0/VirtualNovel.Gateway.GeneratedMSBuildEditorConfig.editorconfig
-/home/dane/Projekty/VirtualNovel/src/VirtualNovel.Gateway/obj/Debug/net10.0/VirtualNovel.Gateway.AssemblyInfoInputs.cache
-/home/dane/Projekty/VirtualNovel/src/VirtualNovel.Gateway/obj/Debug/net10.0/VirtualNovel.Gateway.AssemblyInfo.cs
-/home/dane/Projekty/VirtualNovel/src/VirtualNovel.Gateway/obj/Debug/net10.0/VirtualNovel.Gateway.csproj.CoreCompileInputs.cache
-/home/dane/Projekty/VirtualNovel/src/VirtualNovel.Gateway/obj/Debug/net10.0/VirtualNovel.Gateway.MvcApplicationPartsAssemblyInfo.cache

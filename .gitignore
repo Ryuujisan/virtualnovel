@@ -1,0 +1,88 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+out/
+build/
+dist/
+
+# .NET
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+*.nupkg
+*.snupkg
+*.nuspec
+project.lock.json
+project.assets.json
+artifacts/
+
+# Test results and coverage
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+coverage/
+coverage-report/
+lcov.info
+
+# Visual Studio / Rider / ReSharper
+.vs/
+.idea/
+*.sln.iml
+_ReSharper*/
+*.DotSettings.user
+
+# ASP.NET local/generated files
+Properties/ServiceDependencies/
+Properties/PublishProfiles/*.pubxml.user
+appsettings.Local.json
+appsettings.*.local.json
+
+# React / Node
+node_modules/
+.npm/
+.pnpm-store/
+.yarn/
+!.yarn/releases/
+!.yarn/plugins/
+!.yarn/sdks/
+!.yarn/versions/
+
+# Frontend build and framework caches
+.vite/
+.next/
+.nuxt/
+.svelte-kit/
+storybook-static/
+
+# Package manager logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.template
+
+# Docker/local tooling
+*.pid
+*.seed
+*.pid.lock
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
