@@ -8,10 +8,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.8" />
+    <PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\VirtualNovel.Contracts\VirtualNovel.Contracts.csproj" />
+    <ProjectReference Include="..\VirtualNovel.BuildingBlocks\VirtualNovel.BuildingBlocks.csproj" />
   </ItemGroup>
 
 </Project>

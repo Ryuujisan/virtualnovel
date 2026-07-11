@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\VirtualNovel.IdentityService\VirtualNovel.IdentityService.csproj" />
+    <ProjectReference Include="..\..\src\VirtualNovel.UserService\VirtualNovel.UserService.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,9 +1,10 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/VirtualNovel.BuildingBlocks/VirtualNovel.BuildingBlocks.csproj" />
     <Project Path="src/VirtualNovel.Contracts/VirtualNovel.Contracts.csproj" />
     <Project Path="src/VirtualNovel.Gateway/VirtualNovel.Gateway.csproj" />
-    <Project Path="src/VirtualNovel.IdentityService/VirtualNovel.IdentityService.csproj" />
     <Project Path="src/VirtualNovel.NovelService/VirtualNovel.NovelService.csproj" />
+    <Project Path="src\VirtualNovel.UserService\VirtualNovel.UserService.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/VirtualNovel.IdentityService.Tests/VirtualNovel.IdentityService.Tests.csproj" />

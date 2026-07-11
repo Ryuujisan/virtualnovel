@@ -2,4 +2,7 @@
     <PropertyGroup>
         <AllowMissingPrunePackageData>true</AllowMissingPrunePackageData>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(IsTestProject)' != 'true'">
+        <UserSecretsId>virtualnovel-development</UserSecretsId>
+    </PropertyGroup>
 </Project>

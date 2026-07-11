@@ -7,7 +7,7 @@ namespace VirtualNovel.BuildingBlocks.Database;
 
 public static class DatabaseExtensions
 {
-    public static IServiceCollection AddPostgresql<T>(
+    public static IServiceCollection AddPostgres<T>(
         this IServiceCollection services,
         IConfiguration configuration)
         where T : DbContext
@@ -16,11 +16,10 @@ public static class DatabaseExtensions
             configuration.GetConnectionString("Database")
             ?? throw new InvalidOperationException(
                 "Connection string 'Database' is missing.");
-        
-        
-        services.AddDbContext<T>(options =>
+
+        services.AddDbContextPool<T>(options =>
             options.UseNpgsql(connectionString));
-        
+
         return services;
     }
 }
