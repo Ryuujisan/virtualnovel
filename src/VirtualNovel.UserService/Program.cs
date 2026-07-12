@@ -17,6 +17,11 @@ builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    await UserDbSeeder.SeedAsync(app.Services);
+}
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

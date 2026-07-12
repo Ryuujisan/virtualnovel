@@ -12,18 +12,32 @@ public sealed class UserProfileService(
     UserDbContext dbContext,
     ICurrentUser currentUser) : IUserProfileService
 {
-    public async Task<UserProfileDto> GetCurrentUserAsync(
+    public async Task<UserProfileDto?> GetUserAsync(
+        string firebaseUid,
         CancellationToken cancellationToken = default)
     {
-        var user = await GetOrCreateCurrentUserAsync(cancellationToken);
+        var user = await dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                user => user.FirebaseUid == firebaseUid,
+                cancellationToken);
 
-        return MapToDto(user);
+        return user is null ? null : MapToDto(user);
     }
 
-    public async Task<UserProfileDto> UpdateCurrentUserAsync(
+    public async Task<UserProfileDto?> UpdateUserAsync(
+        string firebaseUid,
         UpdateUserProfileRequest request,
         CancellationToken cancellationToken = default)
     {
+        if (!string.Equals(
+                currentUser.FirebaseUid,
+                firebaseUid,
+                StringComparison.Ordinal))
+        {
+            return null;
+        }
+
         var user = await GetOrCreateCurrentUserAsync(cancellationToken);
 
         var anyChanges = false;

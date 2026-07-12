@@ -7,20 +7,4 @@
     <RootNamespace>VirtualNovel.IdentityService</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
-    <PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\VirtualNovel.Contracts\VirtualNovel.Contracts.csproj" />
-    <ProjectReference Include="..\VirtualNovel.BuildingBlocks\VirtualNovel.BuildingBlocks.csproj" />
-  </ItemGroup>
-
 </Project>
