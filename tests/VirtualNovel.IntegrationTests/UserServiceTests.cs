@@ -1,34 +1,16 @@
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using VirtualNovel.IdentityService.Dto.Models;
 using VirtualNovel.IdentityService.Dto.Request;
 using VirtualNovel.IdentityService.Infrastructure.Database;
+using VirtualNovel.IntegrationTests.Infrastructure;
 
 namespace VirtualNovel.IntegrationTests;
 
 public sealed class UserServiceTests(UserServiceFactory factory)
     : IClassFixture<UserServiceFactory>
 {
-    private async Task<HttpClient> CreateAuthenticatedClient()
-    {
-        await using var scope = factory.Services.CreateAsyncScope();
-
-        var firebase =
-            scope.ServiceProvider.GetRequiredService<FirebaseTokenGenerator>();
-
-        var token = await firebase.GetIdTokenAsync();
-
-        var client = factory.CreateClient();
-
-        client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
-
-        return client;
-    }
-    
     [Fact]
     public async Task Temporary_database_is_available()
     {
@@ -39,31 +21,38 @@ public sealed class UserServiceTests(UserServiceFactory factory)
     }
 
     [Fact]
-    public async Task User_Me_Endpoint()
+    public async Task Get_User_Endpoint_Is_Available_Anonymously()
     {
-        await using var scope = factory.Services.CreateAsyncScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
-        var client = await CreateAuthenticatedClient();
-        var meDto = await client.GetAsync("api/Users/me");
-        Assert.True(meDto.IsSuccessStatusCode);
+        var (client, session) = await factory.CreateAuthenticatedClientAsync();
+        var request = new UpdateUserProfileRequest("Test user", "", "");
+        var updateResponse = await client.PutAsJsonAsync(
+            $"api/Users/{session.UserId}",
+            request);
+        updateResponse.EnsureSuccessStatusCode();
+
+        client.DefaultRequestHeaders.Authorization = null;
+        var response = await client.GetAsync($"api/Users/{session.UserId}");
+
+        Assert.True(response.IsSuccessStatusCode);
     }
     
     [Fact]
-    public async Task User_Update_Endpoint()
+    public async Task Update_User_Endpoint_Updates_Current_User()
     {
-        await using var scope = factory.Services.CreateAsyncScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
-         var client = await CreateAuthenticatedClient();
-         await client.GetAsync("api/Users/me");
+         var (client, session) = await factory.CreateAuthenticatedClientAsync();
          var reqData = new UpdateUserProfileRequest("Test_Check", "Random bio", "");
          
-         await client.PutAsJsonAsync("api/Users/me", reqData);
+         var updateResponse = await client.PutAsJsonAsync(
+             $"api/Users/{session.UserId}",
+             reqData);
+         updateResponse.EnsureSuccessStatusCode();
 
          var response = await client.GetFromJsonAsync<UserProfileDto>(
-             "api/Users/me");
+             $"api/Users/{session.UserId}");
 
          Assert.NotNull(response);
          Assert.Equal("Test_Check", response.DisplayName);
          Assert.Equal("Random bio", response.Bio);
     }
+
 }

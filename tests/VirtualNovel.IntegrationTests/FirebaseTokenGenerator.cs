@@ -5,7 +5,8 @@ namespace VirtualNovel.IntegrationTests;
 
 public sealed class FirebaseTokenGenerator(HttpClient httpClient, string emulatorHost)
 {
-    public async Task<string> GetIdTokenAsync(CancellationToken cancellationToken = default)
+    public async Task<FirebaseSession> CreateSessionAsync(
+        CancellationToken cancellationToken = default)
     {
         var host = emulatorHost
             .Replace("http://", string.Empty, StringComparison.OrdinalIgnoreCase)
@@ -22,13 +23,19 @@ public sealed class FirebaseTokenGenerator(HttpClient httpClient, string emulato
 
         var result = await response.Content.ReadFromJsonAsync<AuthTokenResponse>(
             cancellationToken: cancellationToken);
-        return result?.IdToken
-            ?? throw new InvalidOperationException("Firebase emulator did not return an ID token.");
+        return result is null
+            ? throw new InvalidOperationException("Firebase emulator did not return a user session.")
+            : new FirebaseSession(result.IdToken, result.LocalId);
     }
 
     private sealed class AuthTokenResponse
     {
         [JsonPropertyName("idToken")]
         public required string IdToken { get; init; }
+
+        [JsonPropertyName("localId")]
+        public required string LocalId { get; init; }
     }
 }
+
+public sealed record FirebaseSession(string IdToken, string UserId);

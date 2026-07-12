@@ -3,13 +3,13 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
-using VirtualNovel.IdentityService.Infrastructure.Database;
 
-namespace VirtualNovel.IntegrationTests;
+namespace VirtualNovel.IntegrationTests.Infrastructure;
 
-public sealed class UserServiceFactory
-    : WebApplicationFactory<VirtualNovel.IdentityService.AssemblyMarker>,
-        IAsyncLifetime
+public abstract class ServiceFactory<TEntryPoint, TDbContext>
+    : WebApplicationFactory<TEntryPoint>, IAsyncLifetime
+    where TEntryPoint : class
+    where TDbContext : DbContext
 {
     private readonly PostgreSqlContainer _database =
         new PostgreSqlBuilder("postgres:17-alpine")
@@ -22,14 +22,10 @@ public sealed class UserServiceFactory
     {
         await _database.StartAsync();
 
-        // Dopiero teraz tworzymy host, kiedy connection string kontenera już istnieje.
         _ = CreateClient();
 
         await using var scope = Services.CreateAsyncScope();
-
-        var dbContext =
-            scope.ServiceProvider.GetRequiredService<UserDbContext>();
-
+        var dbContext = scope.ServiceProvider.GetRequiredService<TDbContext>();
         await dbContext.Database.MigrateAsync();
     }
 
@@ -51,11 +47,7 @@ public sealed class UserServiceFactory
         builder.UseSetting(
             "ConnectionStrings:Database",
             _database.GetConnectionString());
-
-        builder.UseSetting(
-            "Firebase:ProjectId",
-            "demo-virtualnovel");
-
+        builder.UseSetting("Firebase:ProjectId", "demo-virtualnovel");
         builder.UseSetting(
             "Firebase:AuthenticationEmulatorHost",
             "127.0.0.1:9099");
