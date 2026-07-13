@@ -67,6 +67,40 @@ public sealed class UserServiceTests(UserServiceFactory factory)
     }
 
     [Fact]
+    public async Task Get_Author_Returns_Public_Preview()
+    {
+        var (client, session) = await factory.CreateAuthenticatedClientAsync();
+        var request = new UpdateUserProfileRequest(
+            "Public author",
+            "Private profile fields are not needed in a novel response.",
+            "");
+        var updateResponse = await client.PutAsJsonAsync(
+            $"api/users/{session.UserId}",
+            request);
+        updateResponse.EnsureSuccessStatusCode();
+
+        client.DefaultRequestHeaders.Authorization = null;
+        var author = await client.GetFromJsonAsync<AuthorPreviewDto>(
+            $"api/users/author/{session.UserId}");
+
+        Assert.NotNull(author);
+        Assert.Equal(session.UserId, author.AuthorId);
+        Assert.Equal("Public author", author.Name);
+        Assert.Null(author.AvatarUrl);
+    }
+
+    [Fact]
+    public async Task Get_Unknown_Author_Returns_NotFound()
+    {
+        using var client = factory.CreateClient();
+
+        var response = await client.GetAsync(
+            "api/users/author/unknown-author-id");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
     public async Task Update_User_Requires_Authorization()
     {
         using var client = factory.CreateClient();

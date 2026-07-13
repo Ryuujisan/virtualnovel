@@ -33,4 +33,14 @@ public class UsersController
 
         return profile is null ? Forbid() : Ok(profile);
     }
+
+    [HttpGet("author/{id}")]
+    public async Task<IActionResult> GetAuthor(string id, CancellationToken cancellationToken = default)
+    {
+        var author = await userProfileService.GetAuthorPreviewAsync(
+            id,
+            cancellationToken);
+
+        return author is null ? NotFound() : Ok(author);
+    }
 }

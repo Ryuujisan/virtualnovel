@@ -1,4 +1,4 @@
-import {Box, CircularProgress, Stack, Typography} from "@mui/material";
+import {Box, Skeleton, Stack, Typography} from "@mui/material";
 import {useInfiniteQuery} from "@tanstack/react-query";
 import {useEffect, useRef} from "react";
 import NovelFeedCard from "./NovelFeedCard.tsx";
@@ -102,7 +102,18 @@ export default function LastUpdate() {
                     }}
                 >
                     {isFetchingNextPage && (
-                        <CircularProgress size={32} />
+                        <>
+                            <Skeleton
+                                variant="rectangular"
+                                height={120}
+                                sx={{ borderRadius: 2 }}
+                            />
+                            <Skeleton
+                                variant="rectangular"
+                                height={120}
+                                sx={{ borderRadius: 2 }}
+                            />
+                        </>
                     )}
                 </Box>
             </Stack>

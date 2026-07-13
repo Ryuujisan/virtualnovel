@@ -1,0 +1,124 @@
+import {Avatar, Box, Button, Chip, Grid, Rating, Stack, Typography} from "@mui/material";
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import UpdateIcon from '@mui/icons-material/Update';
+import ChapterTable from "./ChapterTable.tsx";
+import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
+import EmailIcon from '@mui/icons-material/Email';
+import type {NovelDto} from "../type.ts";
+import {Link} from "react-router-dom";
+
+
+interface NovelProps {
+    novel: NovelDto;
+}
+
+export default function NovelContent({novel}:NovelProps) {
+    function formatUpdatedAt(value: string): string {
+        return new Intl.DateTimeFormat("en", {
+            dateStyle: "medium",
+        }).format(new Date(value));
+    }
+    return (
+        <>
+            <Grid container spacing={1}>
+                <Grid size={2}>
+                    <Stack>
+                        <img src={novel?.coverUrl ?? ""} alt={"cover"} />
+                        <Rating name="half-rating-read" defaultValue={novel?.rating ?? 0} value={novel?.rating ?? 0} precision={0.5}/>
+                    </Stack>
+                </Grid>
+                <Grid size={9}>
+                    <Typography variant="h4" gutterBottom>{novel?.title}</Typography>
+
+                    <Stack direction="row" spacing={1} sx={{ flexGrow: 1,  marginBottom: 2}}>
+                        <Chip
+                            label={novel?.status}
+                            size="small"
+                            color={
+                                novel?.status.toLowerCase() === "complete"
+                                    ? "success"
+                                    : "primary"
+                            }
+                        />
+                        <Chip
+                            label={novel?.workType}
+                            size="small"
+                        />
+                        {novel?.romanceType !== "None" && (
+                            <Chip
+                                label={novel?.romanceType}
+                                size="small"
+                                color="secondary"
+                                sx={{
+                                    fontWeight: 700,
+                                }}
+                            />
+                        )}
+                        <Typography><LibraryBooksIcon/> {novel?.chapters.length} chapter</Typography>
+                        <Typography><UpdateIcon/> {formatUpdatedAt(novel?.updatedAt ?? "1.01.1990")} last update</Typography>
+                    </Stack>
+                    <Stack direction="row" spacing={1} sx={{ flexGrow: 1,  marginBottom: 2}}>
+                        {novel?.genres.map(item => (<Chip component={Link} to={`/novels/?genre=${item}&sort=updatedAt`} label={item} key={item} sx={{
+                            fontWeight: 700,
+                        }}/>))}
+                    </Stack>
+                    <Typography variant="body2" gutterBottom>Tags:</Typography>
+                    <Typography variant="body2" gutterBottom>W I P</Typography>
+                    <Button color="secondary" variant={"contained"} startIcon={<SubscriptionsIcon/>}>Subscribe</Button>
+                </Grid>
+                <Grid size={1} sx={{alignItems: "center"}}>
+                    <Stack
+                        spacing={2}
+                        sx={{alignItems:"center"}}
+                    >
+                        <Avatar
+                            alt={novel?.author.name}
+                            src={novel?.author.avatarUrl ?? ""}
+                            sx={{ width: 125, height: 125 }}
+                        />
+
+                        <Typography
+                            component={Link}
+                            to={`/profile/${novel?.author.authorId}`}
+                            variant="h6"
+                            sx={{
+                                textDecoration: "none",
+                                color: "text.primary",
+                                fontWeight: 600,
+
+                                "&:hover": {
+                                    color: "primary.main",
+                                },
+                            }}
+                        >
+                            {novel?.author.name}
+                        </Typography>
+
+                        <Button
+                            variant="contained"
+                            startIcon={<EmailIcon />}
+                        >
+                            DM
+                        </Button>
+                    </Stack>
+                </Grid>
+            </Grid>
+            <Box>
+                <Typography variant="h4" gutterBottom>Summary</Typography>
+                <Typography
+                    variant="body2"
+                    color="text.secondary"
+
+                    sx={{
+                        display: "-webkit-box",
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                    }}
+                >
+                    {novel?.description ?? ""}
+                </Typography>
+                <ChapterTable chapters={novel?.chapters ?? []} novelId={novel?.id ?? ""} />
+            </Box>
+        </>
+    )
+}

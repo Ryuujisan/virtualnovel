@@ -28,6 +28,11 @@ public sealed class NovelMappingProfile : Profile
                 options.MapFrom(novel => novel.Genres));
 
         CreateMap<Novel, NovelDto>()
+            .ForCtorParam(nameof(NovelDto.Author), options =>
+                options.MapFrom(novel => new AuthorPreviewDto(
+                    novel.AuthorId,
+                    novel.AuthorId,
+                    null)))
             .ForCtorParam(nameof(NovelDto.Title), options =>
                 options.MapFrom(novel => novel.Name))
             .ForCtorParam(nameof(NovelDto.CoverUrl), options =>
@@ -37,7 +42,11 @@ public sealed class NovelMappingProfile : Profile
             .ForCtorParam(nameof(NovelDto.WorkType), options =>
                 options.MapFrom(novel => novel.WorkType))
             .ForCtorParam(nameof(NovelDto.RomanceType), options =>
-                options.MapFrom(novel => novel.RomanceType));
+                options.MapFrom(novel => novel.RomanceType))
+            .ForCtorParam(nameof(NovelDto.Chapters), options =>
+                options.MapFrom(novel => novel.Chapters
+                    .OrderBy(chapter => chapter.Order)
+                    .ThenBy(chapter => chapter.Id)));
     }
 
     private static float AverageRating(ICollection<Rating> ratings)

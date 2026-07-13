@@ -13,7 +13,7 @@ export const routes = createBrowserRouter([
             {path:"", element: <Home/>},
             {path:"/novels", element: <NovelsSearch/>},
             {path:"/novels/:id", element: <Novel/>},
-            {path:"/novels/:novelId/chapters/:order", element: <Chapter />},
+            {path:"/novels/:novelId/chapter/:order", element: <Chapter />},
             {path:"/notfound", element: <NotFound />},
             { path: "*", element: <Navigate to="/notfound" replace />}
         ]

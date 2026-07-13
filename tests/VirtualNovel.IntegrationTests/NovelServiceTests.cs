@@ -100,7 +100,8 @@ public sealed class NovelServiceTests(NovelServiceFactory factory)
     {
         var created = await NovelTestData.CreateNovelAsync(factory);
 
-        Assert.Equal(created.Session.UserId, created.Novel.AuthorId);
+        Assert.Equal(created.Session.UserId, created.Novel.Author.AuthorId);
+        Assert.False(string.IsNullOrWhiteSpace(created.Novel.Author.Name));
         Assert.Equal(EWorkType.Original, created.Novel.WorkType);
     }
 

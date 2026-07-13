@@ -20,7 +20,15 @@ builder.Services.AddFirebaseAuthentication(builder.Configuration, builder.Enviro
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<INovelService, NovelServices>();
 builder.Services.AddScoped<IChapterServices, ChapterServices>();
+builder.Services.AddHttpClient<IUserServiceClient, UserServicesClient>(
+    client =>
+    {
+        var userServiceUrl = builder.Configuration["Services:UserService"]
+            ?? throw new InvalidOperationException(
+                "Services:UserService configuration is missing.");
 
+        client.BaseAddress = new Uri(userServiceUrl);
+    });
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

@@ -11,13 +11,16 @@ import {
     Typography,
 } from "@mui/material";
 import {
+    AcUnit,
     AccountCircle,
+    DarkMode,
     NotificationsNone,
 } from "@mui/icons-material";
 import EmailIcon from '@mui/icons-material/Email';
 
 import { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useColorMode } from "../themes/ColorModeContext.ts";
 
 const loggedInMenu = [
     { path: "/profile", label: "Profile" },
@@ -32,12 +35,13 @@ const anonymousMenu = [
 
 export default function NavBar() {
     const navigate = useNavigate();
+    const { mode, toggleColorMode } = useColorMode();
 
     const [anchorElUser, setAnchorElUser] =
         useState<HTMLElement | null>(null);
 
     // Tymczasowo. Później z AuthContext/Firebase.
-    const [isAuthenticated] = useState(false);
+    const [isAuthenticated] = useState(true);
 
     const handleOpenUserMenu = (
         event: React.MouseEvent<HTMLElement>,
@@ -146,6 +150,24 @@ export default function NavBar() {
                         </Tooltip>
                     </>
                 )}
+
+                <Tooltip
+                    title={mode === "dark" ? "Włącz jasny motyw" : "Włącz ciemny motyw"}
+                >
+                    <IconButton
+                        color="inherit"
+                        onClick={toggleColorMode}
+                        aria-label={mode === "dark" ? "Włącz jasny motyw" : "Włącz ciemny motyw"}
+                        sx={{
+                            transition: "transform 180ms ease, background-color 180ms ease",
+                            "&:hover": {
+                                transform: "rotate(8deg)",
+                            },
+                        }}
+                    >
+                        {mode === "dark" ? <AcUnit /> : <DarkMode />}
+                    </IconButton>
+                </Tooltip>
 
                 <Tooltip
                     title={

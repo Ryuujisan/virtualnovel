@@ -10,6 +10,10 @@ public interface IUserProfileService
         string firebaseUid,
         CancellationToken cancellationToken = default);
 
+    Task<AuthorPreviewDto?> GetAuthorPreviewAsync(
+        string firebaseUid,
+        CancellationToken cancellationToken = default);
+
     Task<UserProfileDto?> UpdateUserAsync(
         string firebaseUid,
         UpdateUserProfileRequest request,

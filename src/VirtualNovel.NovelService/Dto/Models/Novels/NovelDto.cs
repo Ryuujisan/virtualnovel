@@ -4,7 +4,7 @@ namespace VirtualNovel.NovelService.Dto.Models.Novels;
 
 public record NovelDto(
     Guid Id,
-    string AuthorId,
+    AuthorPreviewDto Author,
     string Title, 
     string Description, 
     string CoverUrl, 
@@ -18,3 +18,4 @@ public record NovelDto(
     DateTime UpdatedAt);
 
 public record ChapterFeedDto(Guid Id, string Title, int Order);
+public record AuthorPreviewDto(string AuthorId, string Name, string? AvatarUrl);

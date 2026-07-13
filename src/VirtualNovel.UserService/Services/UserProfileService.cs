@@ -25,6 +25,19 @@ public sealed class UserProfileService(
         return user is null ? null : MapToDto(user);
     }
 
+    public async Task<AuthorPreviewDto?> GetAuthorPreviewAsync(
+        string firebaseUid,
+        CancellationToken cancellationToken = default)
+    {
+        var user = await dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                user => user.FirebaseUid == firebaseUid,
+                cancellationToken);
+
+        return user is null ? null : MapToAuthorPreview(user);
+    }
+
     public async Task<UserProfileDto?> UpdateUserAsync(
         string firebaseUid,
         UpdateUserProfileRequest request,
@@ -101,7 +114,7 @@ public sealed class UserProfileService(
 
         return user;
     }
-
+    
     private static UserProfileDto MapToDto(UserProfile user)
     {
         return new UserProfileDto(
@@ -111,5 +124,17 @@ public sealed class UserProfileService(
             user.AvatarUrl,
             user.CreatedAt,
             user.UpdatedAt);
+    }
+
+    private static AuthorPreviewDto MapToAuthorPreview(UserProfile user)
+    {
+        var name = string.IsNullOrWhiteSpace(user.DisplayName)
+            ? user.FirebaseUid
+            : user.DisplayName;
+
+        return new AuthorPreviewDto(
+            user.FirebaseUid,
+            name,
+            user.AvatarUrl);
     }
 }

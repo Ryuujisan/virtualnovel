@@ -46,11 +46,15 @@ public sealed class ChapterServiceTests(NovelServiceFactory factory)
         response.EnsureSuccessStatusCode();
         var novel = await created.Client.GetFromJsonAsync<NovelDto>(
             $"api/novels/{created.Novel.Id}");
-        var orderedIds = novel!.Chapters.OrderBy(chapter => chapter.Order)
+        var returnedIds = novel!.Chapters
             .Select(chapter => chapter.Id)
             .ToArray();
+        var returnedOrders = novel.Chapters
+            .Select(chapter => chapter.Order)
+            .ToArray();
 
-        Assert.Equal([third.Id, first.Id, second.Id], orderedIds);
+        Assert.Equal([third.Id, first.Id, second.Id], returnedIds);
+        Assert.Equal([1, 2, 3], returnedOrders);
     }
 
     [Fact]
@@ -65,12 +69,12 @@ public sealed class ChapterServiceTests(NovelServiceFactory factory)
             $"api/chapters?chapterId={second.Id}");
         var novel = await created.Client.GetFromJsonAsync<NovelDto>(
             $"api/novels/{created.Novel.Id}");
-        var remaining = novel!.Chapters.OrderBy(chapter => chapter.Order).ToArray();
+        var remaining = novel!.Chapters.ToArray();
 
         Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         Assert.Equal(2, remaining.Length);
+        Assert.Equal([1, 2], remaining.Select(chapter => chapter.Order));
         Assert.Equal(third.Id, remaining[1].Id);
-        Assert.Equal(2, remaining[1].Order);
     }
 
     [Fact]

@@ -7,4 +7,9 @@ public record UserProfileDto(
     string? AvatarUrl,
     DateTime? CreatedAt,
     DateTime? UpdatedAt);
+
+public record AuthorPreviewDto(
+    string AuthorId,
+    string Name,
+    string? AvatarUrl);
     

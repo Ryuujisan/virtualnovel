@@ -9,7 +9,11 @@ using VirtualNovel.NovelService.Infrastructure.Database;
 namespace VirtualNovel.NovelService.Services;
 
 public class NovelServices 
-    (NovelDbContext db, IMapper mapper, ICurrentUser currentUser): INovelService
+    (NovelDbContext db,
+        IMapper mapper,
+        ICurrentUser currentUser,
+        IUserServiceClient userServiceClient,
+        ILogger<NovelServices> logger): INovelService
 {
     public async Task<IReadOnlyCollection<NovelFeedDto>> GetNovelFeed(
         ICollection<EGenre> genres,
@@ -100,7 +104,9 @@ public class NovelServices
             .Include(i => i.Ratings)
             .Include(i => i.Chapters)
             .FirstOrDefaultAsync(n => n.Id == novelId, cancellationToken);
-        return mapper.Map<NovelDto>(novel);
+        return novel is null
+            ? null
+            : await MapNovelAsync(novel, cancellationToken);
     }
 
     public async Task<NovelDto?> CreateNovel(CreateNovelRequest request, CancellationToken cancellationToken = default)
@@ -121,13 +127,14 @@ public class NovelServices
         };
         db.Novels.Add(novel);
         await db.SaveChangesAsync(cancellationToken);
-        return mapper.Map<NovelDto>(novel);
+        return await MapNovelAsync(novel, cancellationToken);
     }
 
     public async Task<NovelDto?> UpdateNovel(
         UpdateNovelRequest request,
         CancellationToken cancellationToken = default)
     {
+        
         var novel = await db.Novels.FirstOrDefaultAsync(
                 n => n.Id == request.NovelId,
                 cancellationToken);
@@ -182,7 +189,7 @@ public class NovelServices
             await db.SaveChangesAsync(cancellationToken);
         }
 
-        return mapper.Map<NovelDto>(novel);
+        return await MapNovelAsync(novel, cancellationToken);
     }
 
     public async Task<bool> DeleteNovel(
@@ -203,5 +210,40 @@ public class NovelServices
         await db.SaveChangesAsync(cancellationToken);
 
         return true;
+    }
+
+    private async Task<NovelDto> MapNovelAsync(
+        Novel novel,
+        CancellationToken cancellationToken)
+    {
+        var result = mapper.Map<NovelDto>(novel);
+
+        try
+        {
+            var author = await userServiceClient.GetAuthorPreviewAsync(
+                novel.AuthorId,
+                cancellationToken);
+
+            return author is null
+                ? result
+                : result with { Author = author };
+        }
+        catch (HttpRequestException exception)
+        {
+            logger.LogWarning(
+                exception,
+                "Could not load author {AuthorId} from UserService.",
+                novel.AuthorId);
+            return result;
+        }
+        catch (TaskCanceledException exception)
+            when (!cancellationToken.IsCancellationRequested)
+        {
+            logger.LogWarning(
+                exception,
+                "Loading author {AuthorId} from UserService timed out.",
+                novel.AuthorId);
+            return result;
+        }
     }
 }
