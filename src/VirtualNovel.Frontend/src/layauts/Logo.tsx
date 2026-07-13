@@ -11,7 +11,7 @@ export default function Logo() {
                 overflow: "hidden",
 
                 backgroundImage:
-                    'url("https://thumbs.dreamstime.com/b/flying-magic-books-library-367534733.jpg?w=992")',
+                    'url("/hero.png")',
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",

@@ -21,7 +21,11 @@ public sealed class NovelMappingProfile : Profile
             .ForCtorParam(nameof(NovelFeedDto.Title), options =>
                 options.MapFrom(novel => novel.Name))
             .ForCtorParam(nameof(NovelFeedDto.Rating), options =>
-                options.MapFrom(novel => AverageRating(novel.Ratings)));
+                options.MapFrom(novel => AverageRating(novel.Ratings)))
+            .ForCtorParam(nameof(NovelFeedDto.Romance), options =>
+                options.MapFrom(novel => novel.RomanceType))
+            .ForCtorParam(nameof(NovelFeedDto.Genres), options =>
+                options.MapFrom(novel => novel.Genres));
 
         CreateMap<Novel, NovelDto>()
             .ForCtorParam(nameof(NovelDto.Title), options =>

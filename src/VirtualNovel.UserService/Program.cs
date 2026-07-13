@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using VirtualNovel.BuildingBlocks.Authentication;
 using VirtualNovel.BuildingBlocks.Database;
 using VirtualNovel.IdentityService.Infrastructure.Database;
@@ -19,7 +20,15 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    await using var scope = app.Services.CreateAsyncScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
+    await dbContext.Database.MigrateAsync();
     await UserDbSeeder.SeedAsync(app.Services);
+
+    var userCount = await dbContext.Users.CountAsync();
+    app.Logger.LogInformation(
+        "User database initialized with {UserCount} profiles.",
+        userCount);
 }
 
 app.UseHttpsRedirection();

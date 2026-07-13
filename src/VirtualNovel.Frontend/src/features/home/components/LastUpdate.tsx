@@ -1,27 +1,111 @@
-import {Box, Stack, Typography} from "@mui/material";
-import type {NovelFeed} from "../Type.ts";
+import {Box, CircularProgress, Stack, Typography} from "@mui/material";
+import {useInfiniteQuery} from "@tanstack/react-query";
+import {useEffect, useRef} from "react";
 import NovelFeedCard from "./NovelFeedCard.tsx";
+import {getNovels} from "../../../shared/api/api.home.ts";
 
 export default function LastUpdate() {
+    const filters = {
+        sort: "updatedAt",
+        pageSize: 20,
+    };
 
-    const novel: NovelFeed = {
-        coverUrl: "https://cdn.scribblehub.com/seriesimg/mid/122/mid_2443122.jpg",
-        genres: ["Ramance", "Martial Arts"],
-        title: "Neko trouble",
-        rating: 4.5,
-        description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software like Aldus PageMaker and Microsoft Word including versions of Lorem Ipsum.",
-        romance: "Yuri",
-        status: "publishing",
-        id: "test",
-        updatedAt: "10.07.2026"
+    const {
+        data,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        isLoading,
+        isError,
+    } = useInfiniteQuery({
+        queryKey: ["novels", filters],
+        initialPageParam: 1,
+
+        queryFn: ({ pageParam }) =>
+            getNovels({
+                ...filters,
+                page: pageParam,
+            }),
+
+        getNextPageParam: (lastPage, pages) =>
+            lastPage.length === filters.pageSize
+                ? pages.length + 1
+                : undefined,
+    });
+
+    const loadMoreRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const element = loadMoreRef.current;
+
+        if (!element) {
+            return;
+        }
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (
+                    entry.isIntersecting &&
+                    hasNextPage &&
+                    !isFetchingNextPage
+                ) {
+                    void fetchNextPage();
+                }
+            },
+            {
+                threshold: 0.1,
+                rootMargin: "200px",
+            }
+        );
+
+        observer.observe(element);
+
+        return () => observer.disconnect();
+    }, [
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+    ]);
+
+    const novels =
+        data?.pages.flatMap((page) => page) ?? [];
+
+    if (isLoading) {
+        return <Typography>Loading novels...</Typography>;
     }
+
+    if (isError) {
+        return <Typography>Failed to load novels.</Typography>;
+    }
+
     return (
-        <Stack spacing={2} sx={{ flex: 1, marginTop: 2 }}>
-            <Typography variant="h5" component="div">Last Update</Typography>
-            <Box sx={{ alignContent: "center" }}>
-                <NovelFeedCard {...novel} />
-                <NovelFeedCard {...novel} />
-            </Box>
+        <Stack spacing={2} sx={{ flex: 1, mt: 2 }}>
+            <Typography variant="h5">
+                Last Update
+            </Typography>
+
+            <Stack spacing={2}>
+                {novels.map((novel) => (
+                    <NovelFeedCard
+                        key={novel.id}
+                        {...novel}
+                    />
+                ))}
+
+                <Box
+                    ref={loadMoreRef}
+                    sx={{
+                        minHeight: 64,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                >
+                    {isFetchingNextPage && (
+                        <CircularProgress size={32} />
+                    )}
+                </Box>
+            </Stack>
         </Stack>
-    )
+    );
 }

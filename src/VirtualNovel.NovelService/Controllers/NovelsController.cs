@@ -16,9 +16,52 @@ public class NovelsController
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<NovelFeedDto>>> GetNovelFeed(
         [FromQuery(Name = "genre")] string? genreQuery,
-        [FromQuery] ERomanceType type = ERomanceType.None,
+        [FromQuery(Name = "type")] ERomanceType romanceType = ERomanceType.None,
+        [FromQuery] EStatus? status = null,
+        [FromQuery] int? minChapters = null,
+        [FromQuery] int? maxChapters = null,
+        [FromQuery(Name = "sort")] string sortBy = "updatedAt",
+        [FromQuery] string direction = "desc",
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
         CancellationToken cancellationToken = default)
     {
+        if (page < 1)
+        {
+            return BadRequest("Page musi być większe lub równe 1.");
+        }
+
+        if (pageSize is < 1 or > 100)
+        {
+            return BadRequest("PageSize musi mieścić się w zakresie 1-100.");
+        }
+
+        if (minChapters is < 0 || maxChapters is < 0 ||
+            minChapters > maxChapters)
+        {
+            return BadRequest("Zakres liczby rozdziałów jest nieprawidłowy.");
+        }
+
+        var descending = direction.ToLowerInvariant() switch
+        {
+            "desc" => true,
+            "asc" => false,
+            _ => (bool?)null
+        };
+
+        if (descending is null)
+        {
+            return BadRequest("Direction musi mieć wartość 'asc' albo 'desc'.");
+        }
+
+        string[] supportedSorts =
+            ["updatedAt", "createdAt", "rating", "chapterCount", "chapters", "title"];
+        if (!supportedSorts.Contains(sortBy, StringComparer.OrdinalIgnoreCase))
+        {
+            return BadRequest(
+                $"Nieobsługiwane sortowanie: '{sortBy}'.");
+        }
+
         var genres = new List<EGenre>();
 
         if (!string.IsNullOrWhiteSpace(genreQuery))
@@ -41,19 +84,19 @@ public class NovelsController
             }
         }
 
-        var result = await GetFilteredNovelFeed(genres, type, cancellationToken);
+        var result = await novel.GetNovelFeed(
+            genres,
+            romanceType,
+            status,
+            minChapters,
+            maxChapters,
+            sortBy,
+            descending.Value,
+            page,
+            pageSize,
+            cancellationToken);
 
         return Ok(result);
-    }
-
-    private async Task<IReadOnlyCollection<NovelFeedDto>> GetFilteredNovelFeed(List<EGenre> genres, ERomanceType type, CancellationToken cancellationToken = default)
-    {
-        if (genres.Count == 0 && type == ERomanceType.None)
-        {
-            return await novel.GetNovelFeed(cancellationToken);
-        }
-  
-        return await novel.GetFilteredNovelFeed(genres, type, cancellationToken);
     }
     
     [HttpGet("{id:guid}")]
@@ -68,7 +111,6 @@ public class NovelsController
     public async Task<ActionResult<NovelDto>> CreateNovel(CreateNovelRequest request,
         CancellationToken cancellationToken = default)
     {
-        Console.WriteLine(request);
         var novelDto = await novel.CreateNovel(request, cancellationToken);
         return novelDto is null ? NotFound() : Ok(novelDto);
     }

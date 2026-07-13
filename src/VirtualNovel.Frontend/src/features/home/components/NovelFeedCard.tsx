@@ -18,8 +18,7 @@ export default function NovelFeedCard(data: NovelFeed) {
             dateStyle: "medium",
         }).format(new Date(value));
     }
-    console.log(data.updatedAt);
-    console.log(typeof data.updatedAt);
+
     return (
         <Card
             sx={{

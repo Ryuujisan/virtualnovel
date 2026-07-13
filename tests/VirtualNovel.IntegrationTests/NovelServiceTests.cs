@@ -62,6 +62,40 @@ public sealed class NovelServiceTests(NovelServiceFactory factory)
     }
 
     [Fact]
+    public async Task Feed_Sorts_By_UpdatedAt_Descending_And_Applies_Pagination()
+    {
+        await NovelTestData.CreateNovelAsync(factory, "First paged novel");
+        await NovelTestData.CreateNovelAsync(factory, "Second paged novel");
+        await NovelTestData.CreateNovelAsync(factory, "Third paged novel");
+        using var client = factory.CreateClient();
+
+        var response = await client.GetFromJsonAsync<List<NovelFeedDto>>(
+            "api/novels?sort=updatedAt&direction=desc&page=1&pageSize=2");
+
+        Assert.NotNull(response);
+        Assert.Equal(2, response.Count);
+        Assert.True(response[0].UpdatedAt >= response[1].UpdatedAt);
+    }
+
+    [Fact]
+    public async Task Feed_Filters_And_Sorts_By_Chapter_Count()
+    {
+        var oneChapter = await NovelTestData.CreateNovelAsync(factory, "One chapter novel");
+        var twoChapters = await NovelTestData.CreateNovelAsync(factory, "Two chapters novel");
+        await AddChapterAsync(oneChapter, "Chapter 1");
+        await AddChapterAsync(twoChapters, "Chapter 1");
+        await AddChapterAsync(twoChapters, "Chapter 2");
+        using var client = factory.CreateClient();
+
+        var response = await client.GetFromJsonAsync<List<NovelFeedDto>>(
+            "api/novels?minChapters=2&sort=chapterCount&direction=desc");
+
+        Assert.NotNull(response);
+        Assert.Contains(response, novel => novel.Id == twoChapters.Novel.Id);
+        Assert.DoesNotContain(response, novel => novel.Id == oneChapter.Novel.Id);
+    }
+
+    [Fact]
     public async Task Create_Novel_Creates_Novel_For_Current_User()
     {
         var created = await NovelTestData.CreateNovelAsync(factory);
@@ -130,5 +164,16 @@ public sealed class NovelServiceTests(NovelServiceFactory factory)
         var response = await client.PostAsJsonAsync("api/novels", request);
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    private static async Task AddChapterAsync(CreatedNovel created, string title)
+    {
+        var request = new CreateChapterRequest(
+            created.Novel.Id,
+            title,
+            $"Description for {title}",
+            $"Content for {title}");
+        var response = await created.Client.PostAsJsonAsync("api/chapters", request);
+        response.EnsureSuccessStatusCode();
     }
 }

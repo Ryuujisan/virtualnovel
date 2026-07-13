@@ -73,6 +73,7 @@ pnpm-debug.log*
 *.pid
 *.seed
 *.pid.lock
+.run/
 
 # OS/editor noise
 .DS_Store

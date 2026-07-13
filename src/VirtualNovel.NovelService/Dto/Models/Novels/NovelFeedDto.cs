@@ -9,5 +9,6 @@ public record NovelFeedDto(
     string? CoverUrl,
     float Rating,
     EStatus Status,
-    DateTime CreatedAt,
+    ERomanceType Romance,
+    IReadOnlyCollection<EGenre> Genres,
     DateTime UpdatedAt);

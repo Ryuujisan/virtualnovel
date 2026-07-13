@@ -11,23 +11,20 @@ namespace VirtualNovel.NovelService.Services;
 public class NovelServices 
     (NovelDbContext db, IMapper mapper, ICurrentUser currentUser): INovelService
 {
-    public async Task<IReadOnlyCollection<NovelFeedDto>> GetNovelFeed(CancellationToken cancellationToken = default)
-    {
-        var novelFeed = await db.Novels
-            .AsNoTracking()
-            .Include(i => i.Ratings)
-            .ToListAsync(cancellationToken);
-        return mapper.Map<IReadOnlyCollection<NovelFeedDto>>(novelFeed);
-    }
-
-    public async Task<IReadOnlyCollection<NovelFeedDto>> GetFilteredNovelFeed(
+    public async Task<IReadOnlyCollection<NovelFeedDto>> GetNovelFeed(
         ICollection<EGenre> genres,
-        ERomanceType romanceType = ERomanceType.None,
+        ERomanceType romanceType,
+        EStatus? status,
+        int? minChapters = null,
+        int? maxChapters = null,
+        string sortBy = "updatedAt",
+        bool descending = true,
+        int page = 1,
+        int pageSize = 20,
         CancellationToken cancellationToken = default)
     {
         IQueryable<Novel> query = db.Novels
-            .AsNoTracking()
-            .Include(n => n.Ratings);
+            .AsNoTracking();
 
         if (genres.Count > 0)
         {
@@ -41,7 +38,50 @@ public class NovelServices
                 n.RomanceType == romanceType);
         }
 
-        var novels = await query.ToListAsync(cancellationToken);
+        if (status is not null)
+        {
+            query = query.Where(novel => novel.Status == status);
+        }
+
+        if (minChapters is not null)
+        {
+            query = query.Where(novel => novel.Chapters.Count >= minChapters);
+        }
+
+        if (maxChapters is not null)
+        {
+            query = query.Where(novel => novel.Chapters.Count <= maxChapters);
+        }
+
+        var orderedQuery = sortBy.ToLowerInvariant() switch
+        {
+            "createdat" => descending
+                ? query.OrderByDescending(novel => novel.CreatedAt)
+                : query.OrderBy(novel => novel.CreatedAt),
+            "rating" => descending
+                ? query.OrderByDescending(novel => novel.Ratings
+                    .Select(rating => (float?)rating.Rate)
+                    .Average() ?? 0)
+                : query.OrderBy(novel => novel.Ratings
+                    .Select(rating => (float?)rating.Rate)
+                    .Average() ?? 0),
+            "chaptercount" or "chapters" => descending
+                ? query.OrderByDescending(novel => novel.Chapters.Count)
+                : query.OrderBy(novel => novel.Chapters.Count),
+            "title" => descending
+                ? query.OrderByDescending(novel => novel.Name)
+                : query.OrderBy(novel => novel.Name),
+            _ => descending
+                ? query.OrderByDescending(novel => novel.UpdatedAt)
+                : query.OrderBy(novel => novel.UpdatedAt)
+        };
+
+        var novels = await orderedQuery
+            .ThenBy(novel => novel.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Include(novel => novel.Ratings)
+            .ToListAsync(cancellationToken);
 
         return mapper.Map<IReadOnlyCollection<NovelFeedDto>>(novels);
     }

@@ -1,5 +1,6 @@
 ﻿namespace VirtualNovel.NovelService.Entities;
 
+[System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
 public enum EStatus
 {
     Publishing,
@@ -7,6 +8,7 @@ public enum EStatus
     Hiatus,
     Abandoned
 }
+[System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
 public enum ERomanceType
 {
     None = 0,
@@ -15,6 +17,7 @@ public enum ERomanceType
     Yaoi = 3,
     Mixed = 4
 }
+[System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
 public enum EGenre
 {
     Action,
@@ -35,6 +38,7 @@ public enum EGenre
     Isekai,
     MartialArts
 }
+[System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
 public enum EWorkType
 {
     Original = 0,
