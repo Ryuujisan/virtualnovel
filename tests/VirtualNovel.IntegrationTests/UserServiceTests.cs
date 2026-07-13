@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,6 +54,40 @@ public sealed class UserServiceTests(UserServiceFactory factory)
          Assert.NotNull(response);
          Assert.Equal("Test_Check", response.DisplayName);
          Assert.Equal("Random bio", response.Bio);
+    }
+
+    [Fact]
+    public async Task Get_Unknown_User_Returns_NotFound()
+    {
+        using var client = factory.CreateClient();
+
+        var response = await client.GetAsync("api/users/unknown-user-id");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Update_User_Requires_Authorization()
+    {
+        using var client = factory.CreateClient();
+        var request = new UpdateUserProfileRequest("Name", "Bio", "");
+
+        var response = await client.PutAsJsonAsync("api/users/user-id", request);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task User_Cannot_Update_Another_Profile()
+    {
+        var (client, _) = await factory.CreateAuthenticatedClientAsync();
+        var request = new UpdateUserProfileRequest("Name", "Bio", "");
+
+        var response = await client.PutAsJsonAsync(
+            "api/users/different-user-id",
+            request);
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
 }
