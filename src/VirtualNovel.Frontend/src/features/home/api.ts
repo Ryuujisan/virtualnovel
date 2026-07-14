@@ -1,6 +1,7 @@
-import {http} from "./http.ts";
-import type {NovelQuery} from "./api.request.home.ts";
+
 import type {NovelFeed} from "../../features/home/Type.ts";
+import {http} from "../../shared/api/http.ts";
+import type {NovelQuery} from "./request.ts";
 export async function getNovels(
     query: NovelQuery,
 ): Promise<NovelFeed[]>

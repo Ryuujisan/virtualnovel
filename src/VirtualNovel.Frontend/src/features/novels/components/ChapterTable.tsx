@@ -63,6 +63,7 @@ export default function ChapterTable({ novelId, chapters }: ChapterTableProps) {
         <Box sx={{ width: '100%' }}>
             <Box
                 sx={{
+                    marginTop: 2,
                     display: 'flex',
                     justifyContent: 'flex-end',
                     mb: 1.5,

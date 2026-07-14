@@ -4,6 +4,7 @@ using VirtualNovel.BuildingBlocks.Database;
 using VirtualNovel.IdentityService.Infrastructure.Database;
 using VirtualNovel.IdentityService.Interfaces;
 using VirtualNovel.IdentityService.Services;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,21 +15,31 @@ builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHealthChecks();
 //builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+app.UseForwardedHeaders();
+
+var applyMigrations = app.Environment.IsDevelopment() ||
+    builder.Configuration.GetValue<bool>("Database:ApplyMigrations");
+
+if (applyMigrations)
 {
     await using var scope = app.Services.CreateAsyncScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
     await dbContext.Database.MigrateAsync();
-    await UserDbSeeder.SeedAsync(app.Services);
 
-    var userCount = await dbContext.Users.CountAsync();
-    app.Logger.LogInformation(
-        "User database initialized with {UserCount} profiles.",
-        userCount);
+    if (app.Environment.IsDevelopment())
+    {
+        await UserDbSeeder.SeedAsync(app.Services);
+
+        var userCount = await dbContext.Users.CountAsync();
+        app.Logger.LogInformation(
+            "User database initialized with {UserCount} profiles.",
+            userCount);
+    }
 }
 
 app.UseHttpsRedirection();
@@ -43,6 +54,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();
 

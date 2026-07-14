@@ -2,7 +2,7 @@ import {Box, Skeleton, Stack, Typography} from "@mui/material";
 import {useInfiniteQuery} from "@tanstack/react-query";
 import {useEffect, useRef} from "react";
 import NovelFeedCard from "./NovelFeedCard.tsx";
-import {getNovels} from "../../../shared/api/api.home.ts";
+import {getNovels} from "../api.ts";
 
 export default function LastUpdate() {
     const filters = {

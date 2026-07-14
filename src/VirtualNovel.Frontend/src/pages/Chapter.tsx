@@ -3,10 +3,11 @@ import { CircularProgress} from "@mui/material";
 import {useEffect, useState} from "react";
 import type {NovelDto} from "../features/novels/type.ts";
 import type {ChapterDto} from "../features/chapters/type.ts";
-import {getChapter} from "../shared/api/api.chapter.ts";
-import {getNovel} from "../shared/api/api.novel.ts";
+
 
 import ChapterContent from "../features/chapters/ChapterContent.tsx";
+import {getChapter} from "../features/chapters/api.ts";
+import {getNovel} from "../features/novels/api.ts";
 
 
 
@@ -48,7 +49,7 @@ export default function Chapter() {
 
     return (
         <>
-            {!isLoading && (<ChapterContent chapter={chapter!} novel={novel!}/>)}
+            {(!isLoading && chapter != null) && (<ChapterContent chapter={chapter} novel={novel!}/>)}
             {isLoading && (<CircularProgress />)}
         </>
     )

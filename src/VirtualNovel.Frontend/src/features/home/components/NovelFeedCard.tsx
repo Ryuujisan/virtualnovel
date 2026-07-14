@@ -43,7 +43,7 @@ export default function NovelFeedCard(data: NovelFeed) {
                         flexShrink: 0,
                         display: "flex",
                         flexDirection: "column",
-                        bgcolor: "background.default",
+
                     }}
                 >
                     <CardMedia

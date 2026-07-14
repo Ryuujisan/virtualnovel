@@ -1,9 +1,9 @@
 import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import type {NovelDto} from "../features/novels/type.ts";
-import {getNovel} from "../shared/api/api.novel.ts";
 import {Container, Skeleton} from "@mui/material";
 import NovelContent from "../features/novels/components/NovelContent.tsx";
+import {getNovel} from "../features/novels/api.ts";
 
 
 export default function Novel() {

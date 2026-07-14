@@ -4,6 +4,7 @@ using VirtualNovel.BuildingBlocks.Database;
 using VirtualNovel.NovelService.Infrastructure.Database;
 using VirtualNovel.NovelService.Services;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,7 @@ builder.Services.AddAutoMapper(_ => { }, typeof(Program).Assembly);
 builder.Services.AddPostgres<NovelDbContext>(builder.Configuration);
 builder.Services.AddFirebaseAuthentication(builder.Configuration, builder.Environment);
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHealthChecks();
 builder.Services.AddScoped<INovelService, NovelServices>();
 builder.Services.AddScoped<IChapterServices, ChapterServices>();
 builder.Services.AddHttpClient<IUserServiceClient, UserServicesClient>(
@@ -31,19 +33,28 @@ builder.Services.AddHttpClient<IUserServiceClient, UserServicesClient>(
     });
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+app.UseForwardedHeaders();
+
+var applyMigrations = app.Environment.IsDevelopment() ||
+    builder.Configuration.GetValue<bool>("Database:ApplyMigrations");
+
+if (applyMigrations)
 {
     await using var scope = app.Services.CreateAsyncScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<NovelDbContext>();
     await dbContext.Database.MigrateAsync();
-    await NovelDbSeeder.SeedAsync(app.Services);
 
-    var novelCount = await dbContext.Novels.CountAsync();
-    var chapterCount = await dbContext.Chapters.CountAsync();
-    app.Logger.LogInformation(
-        "Novel database initialized with {NovelCount} novels and {ChapterCount} chapters.",
-        novelCount,
-        chapterCount);
+    if (app.Environment.IsDevelopment())
+    {
+        await NovelDbSeeder.SeedAsync(app.Services);
+
+        var novelCount = await dbContext.Novels.CountAsync();
+        var chapterCount = await dbContext.Chapters.CountAsync();
+        app.Logger.LogInformation(
+            "Novel database initialized with {NovelCount} novels and {ChapterCount} chapters.",
+            novelCount,
+            chapterCount);
+    }
 }
 
 app.UseHttpsRedirection();
@@ -58,6 +69,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();
 

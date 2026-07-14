@@ -1,4 +1,5 @@
-import {http} from "./http.ts";
+import {http} from "../../shared/api/http.ts";
+
 
 export async function getNovel(id: string) {
     const response = await http.get(`/novels/${id}`)

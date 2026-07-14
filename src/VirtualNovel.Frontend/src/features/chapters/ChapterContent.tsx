@@ -119,7 +119,7 @@ export default function ChapterContent({chapter, novel}: Props){
                     (chapter?.order! > 1) && (<Button component={Link} to={`/novels/${novelId}/chapter/${prevOrder}`} variant={"contained"}>Back</Button>)
                 }
                 {
-                    (nextOrder < novel?.chapters.length!) && (<Button component={Link} to={`/novels/${novelId}/chapter/${nextOrder}`} variant={"contained"}>Next</Button>)
+                    (nextOrder <= novel?.chapters.length!) && (<Button component={Link} to={`/novels/${novelId}/chapter/${nextOrder}`} variant={"contained"}>Next</Button>)
                 }
             </Stack>
         </Stack>

@@ -3,8 +3,8 @@ import {Stack} from "@mui/material";
 import TitledBox from "../../../shared/components/TitledBox.tsx";
 import { useEffect, useState} from "react";
 import type {NovelFeed} from "../Type.ts";
-import {getNovels} from "../../../shared/api/api.home.ts";
-import type {NovelQuery} from "../../../shared/api/api.request.home.ts";
+import type {NovelQuery} from "../request.ts";
+import {getNovels} from "../api.ts";
 
 
 export default function PersonalizedRecommendations() {
@@ -22,7 +22,7 @@ export default function PersonalizedRecommendations() {
            )
            setNovels(data);
        }
-       fetchNovels();
+       void fetchNovels();
     },[])
 
     return (

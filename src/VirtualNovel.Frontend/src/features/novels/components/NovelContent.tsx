@@ -4,6 +4,8 @@ import UpdateIcon from '@mui/icons-material/Update';
 import ChapterTable from "./ChapterTable.tsx";
 import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 import EmailIcon from '@mui/icons-material/Email';
+import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
+
 import type {NovelDto} from "../type.ts";
 import {Link} from "react-router-dom";
 
@@ -64,7 +66,10 @@ export default function NovelContent({novel}:NovelProps) {
                     </Stack>
                     <Typography variant="body2" gutterBottom>Tags:</Typography>
                     <Typography variant="body2" gutterBottom>W I P</Typography>
-                    <Button color="secondary" variant={"contained"} startIcon={<SubscriptionsIcon/>}>Subscribe</Button>
+                    <Stack direction="row" spacing={1} sx={{ flexGrow: 1,  marginBottom: 2}}>
+                        <Button color="secondary" variant={"contained"} startIcon={<SubscriptionsIcon/>}>Subscribe</Button>
+                        <Button color="primary" variant={"contained"} startIcon={<LocalLibraryIcon/>}>Continue Reading</Button>
+                    </Stack>
                 </Grid>
                 <Grid size={1} sx={{alignItems: "center"}}>
                     <Stack
