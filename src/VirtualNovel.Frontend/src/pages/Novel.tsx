@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import type {NovelDto} from "../features/novels/type.ts";
 import {getNovel} from "../shared/api/api.novel.ts";
 import {Container, Skeleton} from "@mui/material";
-import NovelContent from "../features/novels/componets/NovelContent.tsx";
+import NovelContent from "../features/novels/components/NovelContent.tsx";
 
 
 export default function Novel() {

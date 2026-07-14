@@ -72,16 +72,16 @@ export default function ChapterTable({ novelId, chapters }: ChapterTableProps) {
                     size="small"
                     sx={{ width: { xs: '100%', sm: 260 } }}
                 >
-                    <InputLabel id="chapter-order-label">Kolejność</InputLabel>
+                    <InputLabel id="chapter-order-label">Order</InputLabel>
                     <Select<ChapterOrder>
                         labelId="chapter-order-label"
                         id="chapter-order"
                         value={chapterOrder}
-                        label="Kolejność"
+                        label="Order"
                         onChange={changeChapterOrder}
                     >
-                        <MenuItem value="ascending">Od pierwszego rozdziału</MenuItem>
-                        <MenuItem value="descending">Od najnowszego rozdziału</MenuItem>
+                        <MenuItem value="ascending">From the very first chapter</MenuItem>
+                        <MenuItem value="descending">From the latest chapter</MenuItem>
                     </Select>
                 </FormControl>
             </Box>
