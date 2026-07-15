@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using VirtualNovel.BuildingBlocks.Authentication;
 using VirtualNovel.BuildingBlocks.Database;
+using VirtualNovel.BuildingBlocks.Serialization;
 using VirtualNovel.IdentityService.Infrastructure.Database;
 using VirtualNovel.IdentityService.Interfaces;
 using VirtualNovel.IdentityService.Services;
@@ -12,7 +13,9 @@ builder.Services.AddFirebaseAuthentication(builder.Configuration, builder.Enviro
 builder.Services.AddPostgres<UserDbContext>(builder.Configuration);
 builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddEnumSerialization();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHealthChecks();
@@ -52,7 +55,6 @@ if (app.Environment.IsDevelopment())
    // app.UseSwagger();
     //app.UseSwaggerUI();
 }
-
 app.MapControllers();
 app.MapHealthChecks("/health");
 

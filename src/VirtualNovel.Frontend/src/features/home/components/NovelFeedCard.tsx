@@ -11,14 +11,9 @@ import {
 } from "@mui/material";
 import type { NovelFeed } from "../Type";
 import {Link} from "react-router-dom";
+import {formatUpdatedAt} from "../../../shared/helper.ts";
 
 export default function NovelFeedCard(data: NovelFeed) {
-    function formatUpdatedAt(value: string): string {
-        return new Intl.DateTimeFormat("en", {
-            dateStyle: "medium",
-        }).format(new Date(value));
-    }
-
     return (
         <Card
             sx={{
@@ -48,7 +43,7 @@ export default function NovelFeedCard(data: NovelFeed) {
                 >
                     <CardMedia
                         component="img"
-                        image={data.coverUrl ?? ""}
+                        image={data.coverUrl || undefined}
                         alt={`Cover of ${data.title}`}
                         sx={{
                             width: "100%",

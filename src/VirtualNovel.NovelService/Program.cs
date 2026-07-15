@@ -1,20 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using VirtualNovel.BuildingBlocks.Authentication;
 using VirtualNovel.BuildingBlocks.Database;
+using VirtualNovel.BuildingBlocks.Serialization;
 using VirtualNovel.NovelService.Infrastructure.Database;
 using VirtualNovel.NovelService.Services;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.Converters.Add(
-            new JsonStringEnumConverter());
-    });
+    .AddEnumSerialization();
 builder.Services.AddAutoMapper(_ => { }, typeof(Program).Assembly);
 builder.Services.AddPostgres<NovelDbContext>(builder.Configuration);
 builder.Services.AddFirebaseAuthentication(builder.Configuration, builder.Environment);

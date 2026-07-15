@@ -21,17 +21,9 @@ import EmailIcon from '@mui/icons-material/Email';
 import { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useColorMode } from "../themes/ColorModeContext.ts";
+import {useUserStore} from "../store/userStore.ts";
+import {signOutUser} from "../shared/auth/auth.service.ts";
 
-const loggedInMenu = [
-    { path: "/profile", label: "Profile" },
-    { path: "/bookmarks", label: "Bookmarks" },
-    { path: "/settings", label: "Settings" },
-];
-
-const anonymousMenu = [
-    { path: "/login", label: "Login" },
-    { path: "/register", label: "Register" },
-];
 
 export default function NavBar() {
     const navigate = useNavigate();
@@ -40,8 +32,6 @@ export default function NavBar() {
     const [anchorElUser, setAnchorElUser] =
         useState<HTMLElement | null>(null);
 
-    // Tymczasowo. Później z AuthContext/Firebase.
-    const [isAuthenticated] = useState(true);
 
     const handleOpenUserMenu = (
         event: React.MouseEvent<HTMLElement>,
@@ -61,10 +51,23 @@ export default function NavBar() {
     const handleLogout = async () => {
         handleCloseUserMenu();
 
-        // Później:
-        // await signOut(auth);
-        // navigate("/");
+        await signOutUser();
+        navigate("/");
     };
+
+    const isAuthenticated = useUserStore(x => x?.user !== null);
+    const user = useUserStore(x => x.user);
+
+    const loggedInMenu = [
+        { path: `/profile/${user?.firebaseUid}`, label: "Profile" },
+        { path: "/create", label: "Create" },
+        { path: "/settings", label: "Settings" },
+    ];
+
+    const anonymousMenu = [
+        { path: "/login", label: "Login" },
+        { path: "/register", label: "Register" },
+    ];
 
     const menuItems = isAuthenticated
         ? loggedInMenu
@@ -182,7 +185,7 @@ export default function NavBar() {
                     >
                         {isAuthenticated ? (
                             <Avatar
-                                src=""
+                                src={user?.avatarUrl ?? undefined}
                                 alt="User avatar"
                                 sx={{
                                     width: 38,

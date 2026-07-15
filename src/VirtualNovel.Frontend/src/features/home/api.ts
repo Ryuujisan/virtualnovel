@@ -9,7 +9,8 @@ export async function getNovels(
     const response = await http.get<NovelFeed[]>("/novels", {
         params: {
             genre: query.genre?.join(","),
-            romance: query.romance,
+            type: query.romance,
+            author: query.author,
             status: query.status,
             sort: query.sort,
             page: query.page,

@@ -10,6 +10,13 @@ namespace VirtualNovel.IdentityService.Controllers;
 public class UsersController 
     (IUserProfileService userProfileService): ControllerBase
 {
+    [Authorize]
+    [HttpGet("me")]
+    public async Task<IActionResult> GetMeAsync(CancellationToken cancellationToken = default)
+    {
+        var user = await userProfileService.GetMe(cancellationToken);
+        return user is null ? NotFound() : Ok(user);
+    }
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUser(
         string id,
@@ -20,14 +27,12 @@ public class UsersController
     }
     
     [Authorize]
-    [HttpPut("{id}")]
+    [HttpPut]
     public async Task<IActionResult> UpdateUser(
-        string id,
         UpdateUserProfileRequest request,
         CancellationToken cancellationToken = default)
     {
         var profile = await userProfileService.UpdateUserAsync(
-            id,
             request,
             cancellationToken);
 

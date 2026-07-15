@@ -8,6 +8,7 @@ import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
 
 import type {NovelDto} from "../type.ts";
 import {Link} from "react-router-dom";
+import {formatUpdatedAt} from "../../../shared/helper.ts";
 
 
 interface NovelProps {
@@ -15,17 +16,12 @@ interface NovelProps {
 }
 
 export default function NovelContent({novel}:NovelProps) {
-    function formatUpdatedAt(value: string): string {
-        return new Intl.DateTimeFormat("en", {
-            dateStyle: "medium",
-        }).format(new Date(value));
-    }
     return (
         <>
             <Grid container spacing={1}>
                 <Grid size={2}>
                     <Stack>
-                        <img src={novel?.coverUrl ?? ""} alt={"cover"} />
+                        <img src={novel.coverUrl || undefined} alt={"cover"} />
                         <Rating name="half-rating-read" defaultValue={novel?.rating ?? 0} value={novel?.rating ?? 0} precision={0.5}/>
                     </Stack>
                 </Grid>
@@ -77,8 +73,8 @@ export default function NovelContent({novel}:NovelProps) {
                         sx={{alignItems:"center"}}
                     >
                         <Avatar
-                            alt={novel?.author.name}
-                            src={novel?.author.avatarUrl ?? ""}
+                            alt={novel.author.name}
+                            src={novel.author.avatarUrl || undefined}
                             sx={{ width: 125, height: 125 }}
                         />
 

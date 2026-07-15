@@ -12,6 +12,15 @@ public sealed class UserProfileService(
     UserDbContext dbContext,
     ICurrentUser currentUser) : IUserProfileService
 {
+    public async Task<UserProfileDto?> GetMe(CancellationToken cancellationToken = default)
+    {
+        var user = await dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                user => user.FirebaseUid == currentUser.FirebaseUid,
+                cancellationToken);
+        return user is null ? null : MapToDto(user);
+    }
     public async Task<UserProfileDto?> GetUserAsync(
         string firebaseUid,
         CancellationToken cancellationToken = default)
@@ -39,18 +48,9 @@ public sealed class UserProfileService(
     }
 
     public async Task<UserProfileDto?> UpdateUserAsync(
-        string firebaseUid,
         UpdateUserProfileRequest request,
         CancellationToken cancellationToken = default)
     {
-        if (!string.Equals(
-                currentUser.FirebaseUid,
-                firebaseUid,
-                StringComparison.Ordinal))
-        {
-            return null;
-        }
-
         var user = await GetOrCreateCurrentUserAsync(cancellationToken);
 
         var anyChanges = false;
@@ -67,10 +67,18 @@ public sealed class UserProfileService(
             anyChanges = true;
         }
 
-        // Avatar najlepiej obsłużyć osobnym endpointem,
-        // np. PUT /users/me/avatar.
-        // Cloudinary zwróci URL, który zapiszesz tutaj.
-        
+        if (user.AvatarUrl != request.AvatarUrl)
+        {
+            user.AvatarUrl = request.AvatarUrl;
+            anyChanges = true;
+        }
+
+        if (user.Gender != request.Gender)
+        {
+            user.Gender = request.Gender;
+            anyChanges = true;
+            
+        }
         if (anyChanges)
         {
             user.UpdatedAt = DateTime.UtcNow;
@@ -120,6 +128,7 @@ public sealed class UserProfileService(
         return new UserProfileDto(
             user.FirebaseUid,
             user.DisplayName,
+            user.Gender,
             user.Bio,
             user.AvatarUrl,
             user.CreatedAt,

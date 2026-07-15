@@ -9,6 +9,7 @@ public interface INovelService
     public Task<IReadOnlyCollection<NovelFeedDto>> GetNovelFeed(
         ICollection<EGenre> genres,
         ERomanceType romanceType,
+        string? author,
         EStatus? status,
         int? minChapters = null,
         int? maxChapters = null,

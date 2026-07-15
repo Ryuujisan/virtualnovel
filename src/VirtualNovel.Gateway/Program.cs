@@ -1,9 +1,12 @@
 using VirtualNovel.BuildingBlocks.Authentication;
+using VirtualNovel.BuildingBlocks.Serialization;
 using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddEnumSerialization();
 builder.Services.AddHealthChecks();
 
 var allowedOrigins = builder.Configuration

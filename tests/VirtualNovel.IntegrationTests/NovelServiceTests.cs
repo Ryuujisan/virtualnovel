@@ -78,6 +78,25 @@ public sealed class NovelServiceTests(NovelServiceFactory factory)
     }
 
     [Fact]
+    public async Task Feed_Filters_By_Requested_Author()
+    {
+        var requestedAuthorNovel = await NovelTestData.CreateNovelAsync(
+            factory,
+            "Requested author novel");
+        var otherAuthorNovel = await NovelTestData.CreateNovelAsync(
+            factory,
+            "Other author novel");
+        using var anonymousClient = factory.CreateClient();
+
+        var response = await anonymousClient.GetFromJsonAsync<List<NovelFeedDto>>(
+            $"api/novels?author={Uri.EscapeDataString(requestedAuthorNovel.Session.UserId)}");
+
+        Assert.NotNull(response);
+        Assert.Contains(response, novel => novel.Id == requestedAuthorNovel.Novel.Id);
+        Assert.DoesNotContain(response, novel => novel.Id == otherAuthorNovel.Novel.Id);
+    }
+
+    [Fact]
     public async Task Feed_Filters_And_Sorts_By_Chapter_Count()
     {
         var oneChapter = await NovelTestData.CreateNovelAsync(factory, "One chapter novel");

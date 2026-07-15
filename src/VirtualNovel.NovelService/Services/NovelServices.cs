@@ -18,6 +18,7 @@ public class NovelServices
     public async Task<IReadOnlyCollection<NovelFeedDto>> GetNovelFeed(
         ICollection<EGenre> genres,
         ERomanceType romanceType,
+        string? author,
         EStatus? status,
         int? minChapters = null,
         int? maxChapters = null,
@@ -29,6 +30,10 @@ public class NovelServices
     {
         IQueryable<Novel> query = db.Novels
             .AsNoTracking();
+        if (!string.IsNullOrWhiteSpace(author))
+        {
+            query = query.Where(novel => novel.AuthorId == author);
+        }
 
         if (genres.Count > 0)
         {

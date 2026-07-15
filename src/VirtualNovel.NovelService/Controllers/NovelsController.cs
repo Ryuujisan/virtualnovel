@@ -17,6 +17,7 @@ public class NovelsController
     public async Task<ActionResult<IReadOnlyCollection<NovelFeedDto>>> GetNovelFeed(
         [FromQuery(Name = "genre")] string? genreQuery,
         [FromQuery(Name = "type")] ERomanceType romanceType = ERomanceType.None,
+        [FromQuery(Name = "author")] string? author = "",
         [FromQuery] EStatus? status = null,
         [FromQuery] int? minChapters = null,
         [FromQuery] int? maxChapters = null,
@@ -87,6 +88,7 @@ public class NovelsController
         var result = await novel.GetNovelFeed(
             genres,
             romanceType,
+            author,
             status,
             minChapters,
             maxChapters,
