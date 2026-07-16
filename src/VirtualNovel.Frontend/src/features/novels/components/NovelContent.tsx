@@ -7,8 +7,10 @@ import EmailIcon from '@mui/icons-material/Email';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
 
 import type {NovelDto} from "../type.ts";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {formatUpdatedAt} from "../../../shared/helper.ts";
+import {useUserStore} from "../../../store/userStore.ts";
+import EditIcon from "@mui/icons-material/EditOutlined";
 
 
 interface NovelProps {
@@ -16,6 +18,13 @@ interface NovelProps {
 }
 
 export default function NovelContent({novel}:NovelProps) {
+    const currentUser = useUserStore((state) => state.user);
+    const canEdit = Boolean(
+        novel.author.authorId &&
+        currentUser?.firebaseUid &&
+        novel.author.authorId === currentUser.firebaseUid,
+    );
+    const navigate = useNavigate();
     return (
         <>
             <Grid container spacing={1}>
@@ -26,8 +35,27 @@ export default function NovelContent({novel}:NovelProps) {
                     </Stack>
                 </Grid>
                 <Grid size={9}>
-                    <Typography variant="h4" gutterBottom>{novel?.title}</Typography>
-
+                    <Stack direction={"row"} spacing={2}>
+                    <Typography variant="h4" gutterBottom
+                                sx={{
+                                    fontWeight: 700,
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap",
+                                    }}>{novel?.title}</Typography>
+                        {canEdit && (
+                            <Button
+                                size="small"
+                                startIcon={<EditIcon />}
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    navigate(`/novelwriter?novelId=${novel.id}`);
+                                }}
+                            >
+                                Edit
+                            </Button>
+                        )}
+                    </Stack>
                     <Stack direction="row" spacing={1} sx={{ flexGrow: 1,  marginBottom: 2}}>
                         <Chip
                             label={novel?.status}
