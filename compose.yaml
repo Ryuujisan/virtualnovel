@@ -64,6 +64,29 @@ services:
       retries: 20
       start_period: 30s
 
+  images:
+    image: virtualnovel/images:${IMAGE_TAG:-dev}
+    build:
+      context: .
+      dockerfile: src/VirtualNovel.ImageService/Dockerfile
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      Firebase__ProjectId: ${FIREBASE_PROJECT_ID:-demo-virtualnovel}
+      Cloudinary__CloudName: ${CLOUDINARY_CLOUD_NAME:-}
+      Cloudinary__ApiKey: ${CLOUDINARY_API_KEY:-}
+      Cloudinary__ApiSecret: ${CLOUDINARY_API_SECRET:-}
+    expose:
+      - "8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
   gateway:
     image: virtualnovel/gateway:${IMAGE_TAG:-dev}
     build:
@@ -78,10 +101,13 @@ services:
       Cors__AllowedOrigins__0: http://localhost:5173
       ReverseProxy__Clusters__users-cluster__Destinations__destination1__Address: http://users:8080/
       ReverseProxy__Clusters__novels-cluster__Destinations__destination1__Address: http://novels:8080/
+      ReverseProxy__Clusters__images-cluster__Destinations__destination1__Address: http://images:8080/
     depends_on:
       users:
         condition: service_healthy
       novels:
+        condition: service_healthy
+      images:
         condition: service_healthy
     ports:
       - "5181:8080"

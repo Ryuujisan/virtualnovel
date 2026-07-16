@@ -10,12 +10,15 @@ import {onAuthStateChanged} from "firebase/auth"
 
 export const Root = () => {
         const setUserProfile = useUserStore(x => x.setUser);
+        const setIsChecked = useUserStore(x => x.setIsChecked);
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(
             firebaseAuth,
             async firebaseUser => {
+                setIsChecked(true);
                 if (!firebaseUser) {
                     setUserProfile(null!);
+                    setIsChecked(false);
                     return;
                 }
 
@@ -27,6 +30,9 @@ export const Root = () => {
                 }
                 catch {
                     setUserProfile(null!);
+                }
+                finally {
+                    setIsChecked(false);
                 }
             }
         );

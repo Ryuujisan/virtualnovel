@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\VirtualNovel.NovelService\VirtualNovel.NovelService.csproj" />
     <ProjectReference Include="..\..\src\VirtualNovel.UserService\VirtualNovel.UserService.csproj" />
+    <ProjectReference Include="..\..\src\VirtualNovel.ImageService\VirtualNovel.ImageService.csproj" />
   </ItemGroup>
 
 </Project>

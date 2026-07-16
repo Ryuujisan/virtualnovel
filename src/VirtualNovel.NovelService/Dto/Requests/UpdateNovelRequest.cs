@@ -4,10 +4,10 @@ namespace VirtualNovel.NovelService.Dto.Requests;
 
 public record UpdateNovelRequest(
     Guid NovelId,
-    string Name,
-    string Description,
-    string Url,
-    string CoverUrl,
-    EGenre[] Genres,
-    EWorkType WorkType,
-    ERomanceType RomanceType);
+    string? Name = null,
+    string? Description = null,
+    string? Url = null,
+    string? CoverUrl = null,
+    EGenre[]? Genres = null,
+    EWorkType? WorkType = null,
+    ERomanceType? RomanceType = null);

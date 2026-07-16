@@ -3,7 +3,7 @@ import type {NovelDto} from "../novels/type.ts";
 import {Link, useNavigate} from "react-router-dom";
 import {Autocomplete, Box, Button, Chip, Stack, TextField, Typography} from "@mui/material";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
-
+import { alpha } from "@mui/material/styles";
 
 
 interface Props {
@@ -107,14 +107,29 @@ export default function ChapterContent({chapter, novel}: Props){
                 )}
             />
             <Typography sx={{alignSelf: "center"}} variant={"h3"}>{chapter?.title}</Typography>
-            <Typography
+            <Box
                 sx={{
+                    p: 4,
                     mt: 4,
-                    whiteSpace: "pre-line",
-                    lineHeight: 2,
-                    fontSize: "1.1rem",
-                }}>{chapter?.content}</Typography>
-            <Stack direction={"row"} spacing={2} sx={{alignSelf:"end"}}>
+                    borderRadius: 2,
+
+                    bgcolor: (theme) =>
+                        alpha(theme.palette.primary.main, 0.08),
+                    borderColor: (theme) =>
+                        alpha(theme.palette.primary.main, 0.20),
+                }}
+            >
+                <Typography
+                    sx={{
+                        whiteSpace: "pre-line",
+                        lineHeight: 2.2,
+                        fontSize: "1.15rem",
+                    }}
+                >
+                    {chapter?.content}
+                </Typography>
+            </Box>
+            <Stack direction={"row"} spacing={2} sx={{alignSelf:"end", margin:1}}>
                 {
                     (chapter?.order! > 1) && (<Button component={Link} to={`/novels/${novelId}/chapter/${prevOrder}`} variant={"contained"}>Back</Button>)
                 }

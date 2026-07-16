@@ -1,8 +1,16 @@
-import {Navigate, Outlet, useLocation} from "react-router-dom";
+import {Navigate, useLocation} from "react-router-dom";
+import {useUserStore} from "../store/userStore.ts";
+import MainLayout from "./MainLayout.tsx";
+import {LinearProgress} from "@mui/material";
 
 export default function ProtectedRoute() {
-    const isAuthenticated = true; // później z Firebase/AuthContext
+    const isAuthenticated = useUserStore(x => x?.user !== null);
+    const isChecked = useUserStore(x => x.isChecked);
     const location = useLocation();
+
+    if(isChecked) {
+       return <LinearProgress aria-label="Loading…" />
+    }
 
     if (!isAuthenticated) {
         return (
@@ -14,5 +22,5 @@ export default function ProtectedRoute() {
         );
     }
 
-    return <Outlet />;
+    return <MainLayout />;
 }

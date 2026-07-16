@@ -85,6 +85,7 @@ try
     $images = @(
         @{ Name = "users"; Dockerfile = "src/VirtualNovel.UserService/Dockerfile" },
         @{ Name = "novels"; Dockerfile = "src/VirtualNovel.NovelService/Dockerfile" },
+        @{ Name = "images"; Dockerfile = "src/VirtualNovel.ImageService/Dockerfile" },
         @{ Name = "gateway"; Dockerfile = "src/VirtualNovel.Gateway/Dockerfile" },
         @{ Name = "frontend"; Dockerfile = "src/VirtualNovel.Frontend/Dockerfile" }
     )
@@ -102,6 +103,7 @@ try
 
     $usersName = "$Prefix-users"
     $novelsName = "$Prefix-novels"
+    $imageServiceName = "$Prefix-images"
     $gatewayName = "$Prefix-gateway"
     $frontendName = "$Prefix-web"
 
@@ -151,6 +153,25 @@ try
         --output none
 
     Invoke-AzureCli containerapp create `
+        --name $imageServiceName `
+        --resource-group $ResourceGroup `
+        --environment $EnvironmentName `
+        --image "$registryServer/virtualnovel-images:$ImageTag" `
+        --ingress internal `
+        --target-port 8080 `
+        --system-assigned `
+        --registry-server $registryServer `
+        --registry-identity system `
+        --min-replicas 1 `
+        --max-replicas 3 `
+        --env-vars `
+            "ASPNETCORE_ENVIRONMENT=Production" `
+            "ASPNETCORE_URLS=http://+:8080" `
+            "ASPNETCORE_FORWARDEDHEADERS_ENABLED=true" `
+            "Firebase__ProjectId=$FirebaseProjectId" `
+        --output none
+
+    Invoke-AzureCli containerapp create `
         --name $gatewayName `
         --resource-group $ResourceGroup `
         --environment $EnvironmentName `
@@ -169,6 +190,7 @@ try
             "Firebase__ProjectId=$FirebaseProjectId" `
             "ReverseProxy__Clusters__users-cluster__Destinations__destination1__Address=http://$usersName/" `
             "ReverseProxy__Clusters__novels-cluster__Destinations__destination1__Address=http://$novelsName/" `
+            "ReverseProxy__Clusters__images-cluster__Destinations__destination1__Address=http://$imageServiceName/" `
         --output none
 
     Invoke-AzureCli containerapp create `

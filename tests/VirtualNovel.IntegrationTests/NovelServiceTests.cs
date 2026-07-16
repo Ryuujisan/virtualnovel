@@ -94,6 +94,8 @@ public sealed class NovelServiceTests(NovelServiceFactory factory)
         Assert.NotNull(response);
         Assert.Contains(response, novel => novel.Id == requestedAuthorNovel.Novel.Id);
         Assert.DoesNotContain(response, novel => novel.Id == otherAuthorNovel.Novel.Id);
+        Assert.All(response, novel =>
+            Assert.Equal(requestedAuthorNovel.Session.UserId, novel.Author.AuthorId));
     }
 
     [Fact]
@@ -148,7 +150,28 @@ public sealed class NovelServiceTests(NovelServiceFactory factory)
         Assert.Equal(request.CoverUrl, novel.CoverUrl);
         Assert.Equal(request.WorkType, novel.WorkType);
         Assert.Equal(request.RomanceType, novel.RomanceType);
-        Assert.True(request.Genres.ToHashSet().SetEquals(novel.Genres));
+        Assert.True(request.Genres!.ToHashSet().SetEquals(novel.Genres));
+    }
+
+    [Fact]
+    public async Task Update_Novel_Can_Update_Only_Cover()
+    {
+        var created = await NovelTestData.CreateNovelAsync(factory);
+        var request = new UpdateNovelRequest(
+            created.Novel.Id,
+            CoverUrl: "https://example.com/new-cover.jpg");
+
+        var response = await created.Client.PutAsJsonAsync("api/novels", request);
+        response.EnsureSuccessStatusCode();
+        var novel = await response.Content.ReadFromJsonAsync<NovelDto>();
+
+        Assert.NotNull(novel);
+        Assert.Equal(created.Novel.Title, novel.Title);
+        Assert.Equal(created.Novel.Description, novel.Description);
+        Assert.Equal(request.CoverUrl, novel.CoverUrl);
+        Assert.Equal(created.Novel.WorkType, novel.WorkType);
+        Assert.Equal(created.Novel.RomanceType, novel.RomanceType);
+        Assert.True(created.Novel.Genres.ToHashSet().SetEquals(novel.Genres));
     }
 
     [Fact]

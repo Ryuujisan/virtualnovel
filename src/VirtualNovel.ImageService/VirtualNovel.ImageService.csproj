@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Remove="AutoMapper" />
+    <PackageReference Remove="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Remove="Microsoft.EntityFrameworkCore" />
+    <PackageReference Remove="Microsoft.EntityFrameworkCore.Design" />
+    <PackageReference Remove="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Remove="RabbitMQ.Client" />
+    <PackageReference Include="CloudinaryDotNet" />
+    <ProjectReference Remove="..\VirtualNovel.Contracts\VirtualNovel.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

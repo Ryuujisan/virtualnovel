@@ -6,6 +6,11 @@ export type NovelCardInfo = {
 }
 export type NovelFeed = {
     id: string;
+    author: {
+        authorId: string;
+        name: string;
+        avatarUrl: string | null;
+    };
     title: string;
     description: string;
     coverUrl: string | null;

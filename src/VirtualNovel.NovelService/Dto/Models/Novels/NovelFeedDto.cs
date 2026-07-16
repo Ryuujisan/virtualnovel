@@ -4,6 +4,7 @@ namespace VirtualNovel.NovelService.Dto.Models.Novels;
 
 public record NovelFeedDto(
     Guid Id,
+    AuthorPreviewDto Author,
     string Title,
     string Description,
     string? CoverUrl,

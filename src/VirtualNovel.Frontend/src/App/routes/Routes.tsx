@@ -8,7 +8,10 @@ import NotFound from "../../pages/NotFound.tsx";
 import Register from "../../pages/Register.tsx";
 import Login from "../../pages/Login.tsx";
 import Profile from "../../pages/Profile.tsx";
-import Create from "../../pages/Create.tsx";
+import NovelManagement from "../../pages/NovelManagement.tsx";
+import ProtectedRoute from "../../layauts/ProtectedRoute.tsx";
+import NovelWriter from "../../pages/NovelWriter.tsx";
+import ChapterWriter from "../../pages/ChapterWriter.tsx";
 
 export const routes = createBrowserRouter([
     {
@@ -18,13 +21,22 @@ export const routes = createBrowserRouter([
             {path:"/login", element: <Login />},
             {path:"/register", element: <Register />},
             {path:"/profile/:id", element: <Profile />},
-            {path:"/create", element: <Create />},
+
 
             {path:"/novels", element: <NovelsSearch/>},
             {path:"/novels/:id", element: <Novel/>},
             {path:"/novels/:novelId/chapter/:order", element: <Chapter />},
             {path:"/notfound", element: <NotFound />},
-            { path: "*", element: <Navigate to="/notfound" replace />}
+            { path: "*", element: <Navigate to="/notfound" replace />},
+            {path:"/chapterwriter", element: <ChapterWriter />},
+        ],
+    },
+    {
+        element: <ProtectedRoute />,
+        children: [
+            {path:"/create", element: <NovelManagement />},
+            {path:"/novelwriter", element: <NovelWriter />},
+
         ]
     }
 ])

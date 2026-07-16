@@ -92,7 +92,7 @@ public class NovelServices
             .Include(novel => novel.Ratings)
             .ToListAsync(cancellationToken);
 
-        return mapper.Map<IReadOnlyCollection<NovelFeedDto>>(novels);
+        return await MapNovelFeedAsync(novels, cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<NovelFeedDto>> GetNovelsByAuthor(string authorId, CancellationToken cancellationToken = default)
@@ -100,7 +100,7 @@ public class NovelServices
         var novelFeed = await db.Novels.AsNoTracking()
             .Include(i => i.Ratings)
             .Where(n => n.AuthorId == authorId).ToListAsync(cancellationToken);
-        return mapper.Map<IReadOnlyCollection<NovelFeedDto>>(novelFeed);
+        return await MapNovelFeedAsync(novelFeed, cancellationToken);
     }
 
     public async Task<NovelDto?> GetNovel(Guid novelId, CancellationToken cancellationToken = default)
@@ -152,37 +152,43 @@ public class NovelServices
 
         var anyChanges = false;
 
-        if (request.CoverUrl != novel.CoverUrl)
+        if (request.CoverUrl is not null &&
+            request.CoverUrl != novel.CoverUrl)
         {
             novel.CoverUrl = request.CoverUrl;
             anyChanges = true;
         }
 
-        if (request.RomanceType != novel.RomanceType)
+        if (request.RomanceType is { } romanceType &&
+            romanceType != novel.RomanceType)
         {
-            novel.RomanceType = request.RomanceType;
+            novel.RomanceType = romanceType;
             anyChanges = true;
         }
 
-        if (request.WorkType != novel.WorkType)
+        if (request.WorkType is { } workType &&
+            workType != novel.WorkType)
         {
-            novel.WorkType = request.WorkType;
+            novel.WorkType = workType;
             anyChanges = true;
         }
 
-        if (!novel.Genres.ToHashSet().SetEquals(request.Genres))
+        if (request.Genres is { } genres &&
+            !novel.Genres.ToHashSet().SetEquals(genres))
         {
-            novel.Genres = request.Genres.ToList();
+            novel.Genres = genres.ToList();
             anyChanges = true;
         }
 
-        if (request.Name != novel.Name)
+        if (request.Name is not null &&
+            request.Name != novel.Name)
         {
             novel.Name = request.Name;
             anyChanges = true;
         }
 
-        if (request.Description != novel.Description)
+        if (request.Description is not null &&
+            request.Description != novel.Description)
         {
             novel.Description = request.Description;
             anyChanges = true;
@@ -222,24 +228,62 @@ public class NovelServices
         CancellationToken cancellationToken)
     {
         var result = mapper.Map<NovelDto>(novel);
+        var author = await GetAuthorPreviewAsync(
+            novel.AuthorId,
+            cancellationToken);
+
+        return result with { Author = author };
+    }
+
+    private async Task<IReadOnlyCollection<NovelFeedDto>> MapNovelFeedAsync(
+        IReadOnlyCollection<Novel> novels,
+        CancellationToken cancellationToken)
+    {
+        var authorIds = novels
+            .Select(novel => novel.AuthorId)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+
+        var authors = await Task.WhenAll(authorIds.Select(async authorId =>
+            new
+            {
+                AuthorId = authorId,
+                Author = await GetAuthorPreviewAsync(authorId, cancellationToken)
+            }));
+
+        var authorsById = authors.ToDictionary(
+            item => item.AuthorId,
+            item => item.Author,
+            StringComparer.Ordinal);
+        return novels
+            .Select(novel => mapper.Map<NovelFeedDto>(novel) with
+            {
+                Author = authorsById[novel.AuthorId]
+            })
+            .ToArray();
+    }
+
+    private async Task<AuthorPreviewDto> GetAuthorPreviewAsync(
+        string authorId,
+        CancellationToken cancellationToken)
+    {
+        var fallback = new AuthorPreviewDto(authorId, authorId, null);
 
         try
         {
             var author = await userServiceClient.GetAuthorPreviewAsync(
-                novel.AuthorId,
+                authorId,
                 cancellationToken);
 
-            return author is null
-                ? result
-                : result with { Author = author };
+            return author ?? fallback;
         }
         catch (HttpRequestException exception)
         {
             logger.LogWarning(
                 exception,
                 "Could not load author {AuthorId} from UserService.",
-                novel.AuthorId);
-            return result;
+                authorId);
+            return fallback;
         }
         catch (TaskCanceledException exception)
             when (!cancellationToken.IsCancellationRequested)
@@ -247,8 +291,8 @@ public class NovelServices
             logger.LogWarning(
                 exception,
                 "Loading author {AuthorId} from UserService timed out.",
-                novel.AuthorId);
-            return result;
+                authorId);
+            return fallback;
         }
     }
 }

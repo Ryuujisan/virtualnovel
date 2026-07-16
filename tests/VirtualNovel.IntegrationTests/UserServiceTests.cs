@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using VirtualNovel.IdentityService.Dto.Models;
 using VirtualNovel.IdentityService.Dto.Request;
+using VirtualNovel.IdentityService.Entities;
 using VirtualNovel.IdentityService.Infrastructure.Database;
 using VirtualNovel.IntegrationTests.Infrastructure;
 
@@ -25,9 +26,12 @@ public sealed class UserServiceTests(UserServiceFactory factory)
     public async Task Get_User_Endpoint_Is_Available_Anonymously()
     {
         var (client, session) = await factory.CreateAuthenticatedClientAsync();
-        var request = new UpdateUserProfileRequest("Test user", "", "");
+        var request = new UpdateUserProfileRequest(
+            "Test user",
+            "",
+            EGender.None);
         var updateResponse = await client.PutAsJsonAsync(
-            $"api/Users/{session.UserId}",
+            "api/users",
             request);
         updateResponse.EnsureSuccessStatusCode();
 
@@ -41,10 +45,13 @@ public sealed class UserServiceTests(UserServiceFactory factory)
     public async Task Update_User_Endpoint_Updates_Current_User()
     {
          var (client, session) = await factory.CreateAuthenticatedClientAsync();
-         var reqData = new UpdateUserProfileRequest("Test_Check", "Random bio", "");
+         var reqData = new UpdateUserProfileRequest(
+             "Test_Check",
+             "Random bio",
+             EGender.None);
          
          var updateResponse = await client.PutAsJsonAsync(
-             $"api/Users/{session.UserId}",
+             "api/users",
              reqData);
          updateResponse.EnsureSuccessStatusCode();
 
@@ -73,9 +80,9 @@ public sealed class UserServiceTests(UserServiceFactory factory)
         var request = new UpdateUserProfileRequest(
             "Public author",
             "Private profile fields are not needed in a novel response.",
-            "");
+            EGender.None);
         var updateResponse = await client.PutAsJsonAsync(
-            $"api/users/{session.UserId}",
+            "api/users",
             request);
         updateResponse.EnsureSuccessStatusCode();
 
@@ -104,24 +111,14 @@ public sealed class UserServiceTests(UserServiceFactory factory)
     public async Task Update_User_Requires_Authorization()
     {
         using var client = factory.CreateClient();
-        var request = new UpdateUserProfileRequest("Name", "Bio", "");
+        var request = new UpdateUserProfileRequest(
+            "Name",
+            "Bio",
+            EGender.None);
 
-        var response = await client.PutAsJsonAsync("api/users/user-id", request);
+        var response = await client.PutAsJsonAsync("api/users", request);
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-    }
-
-    [Fact]
-    public async Task User_Cannot_Update_Another_Profile()
-    {
-        var (client, _) = await factory.CreateAuthenticatedClientAsync();
-        var request = new UpdateUserProfileRequest("Name", "Bio", "");
-
-        var response = await client.PutAsJsonAsync(
-            "api/users/different-user-id",
-            request);
-
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
 }

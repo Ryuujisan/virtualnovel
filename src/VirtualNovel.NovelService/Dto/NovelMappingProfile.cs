@@ -18,6 +18,11 @@ public sealed class NovelMappingProfile : Profile
                 options.MapFrom(chapter => chapter.Name ?? string.Empty));
 
         CreateMap<Novel, NovelFeedDto>()
+            .ForCtorParam(nameof(NovelFeedDto.Author), options =>
+                options.MapFrom(novel => new AuthorPreviewDto(
+                    novel.AuthorId,
+                    novel.AuthorId,
+                    null)))
             .ForCtorParam(nameof(NovelFeedDto.Title), options =>
                 options.MapFrom(novel => novel.Name))
             .ForCtorParam(nameof(NovelFeedDto.Rating), options =>

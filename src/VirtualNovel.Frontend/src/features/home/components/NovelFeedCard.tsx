@@ -1,5 +1,7 @@
 import {
+    Avatar,
     Box,
+    Button,
     Card,
     CardActionArea,
     CardContent,
@@ -10,10 +12,22 @@ import {
     Typography,
 } from "@mui/material";
 import type { NovelFeed } from "../Type";
-import {Link} from "react-router-dom";
+import EditIcon from "@mui/icons-material/EditOutlined";
+import {useNavigate} from "react-router-dom";
 import {formatUpdatedAt} from "../../../shared/helper.ts";
+import {useUserStore} from "../../../store/userStore.ts";
 
 export default function NovelFeedCard(data: NovelFeed) {
+    const navigate = useNavigate();
+    const currentUser = useUserStore((state) => state.user);
+    const author = data.author;
+    const authorName = author.name;
+    const canEdit = Boolean(
+        author.authorId &&
+        currentUser?.firebaseUid &&
+        author.authorId === currentUser.firebaseUid,
+    );
+
     return (
         <Card
             sx={{
@@ -23,8 +37,8 @@ export default function NovelFeedCard(data: NovelFeed) {
             }}
         >
             <CardActionArea
-                component={Link}
-                to={`/novels/${data.id}`}
+                component="div"
+                onClick={() => navigate(`/novels/${data.id}`)}
                 sx={{
                     display: "flex",
                     alignItems: "stretch",
@@ -88,6 +102,7 @@ export default function NovelFeedCard(data: NovelFeed) {
                             gap: 2,
                         }}
                     >
+                        <Stack direction={"row"} spacing={2}>
                         <Typography
                             variant="h5"
                             component="h3"
@@ -100,7 +115,19 @@ export default function NovelFeedCard(data: NovelFeed) {
                         >
                             {data.title}
                         </Typography>
-
+                        {canEdit && (
+                            <Button
+                                size="small"
+                                startIcon={<EditIcon />}
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    navigate(`/novelwriter?novelId=${data.id}`);
+                                }}
+                            >
+                                Edit
+                            </Button>
+                        )}
+                        </Stack>
                         <Chip
                             label={data.status}
                             size="small"
@@ -154,12 +181,23 @@ export default function NovelFeedCard(data: NovelFeed) {
                             mt: "auto",
                         }}
                     >
-                        <Typography
-                            variant="caption"
-                            color="text.secondary"
-                        >
-                            Updated: {formatUpdatedAt(data.updatedAt)}
-                        </Typography>
+                        <Stack direction="row" spacing={1} sx={{alignItems: "center", minWidth: 0}}>
+                            <Avatar
+                                src={author.avatarUrl ?? undefined}
+                                alt={authorName}
+                                sx={{width: 28, height: 28, fontSize: 13}}
+                            >
+                                {authorName.charAt(0).toUpperCase()}
+                            </Avatar>
+                            <Box sx={{minWidth: 0}}>
+                                <Typography variant="body2" noWrap sx={{fontWeight: 600}}>
+                                    {authorName}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                    Updated: {formatUpdatedAt(data.updatedAt)}
+                                </Typography>
+                            </Box>
+                        </Stack>
 
                         {data.romance !== "None" && (
                             <Chip

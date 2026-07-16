@@ -3,6 +3,7 @@
     <Project Path="src/VirtualNovel.BuildingBlocks/VirtualNovel.BuildingBlocks.csproj" />
     <Project Path="src/VirtualNovel.Contracts/VirtualNovel.Contracts.csproj" />
     <Project Path="src/VirtualNovel.Gateway/VirtualNovel.Gateway.csproj" />
+    <Project Path="src/VirtualNovel.ImageService/VirtualNovel.ImageService.csproj" />
     <Project Path="src/VirtualNovel.NovelService/VirtualNovel.NovelService.csproj" />
     <Project Path="src\VirtualNovel.UserService\VirtualNovel.UserService.csproj" />
   </Folder>
