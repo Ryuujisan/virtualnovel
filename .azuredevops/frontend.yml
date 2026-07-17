@@ -21,7 +21,7 @@ steps:
     displayName: Build and push frontend
     inputs:
       command: buildAndPush
-      containerRegistry: virtualnovel-acr-connection
+      containerRegistry: virtualnovel-acr
       repository: $(imageRepository)
       dockerfile: $(dockerfilePath)
       buildContext: $(Build.SourcesDirectory)
