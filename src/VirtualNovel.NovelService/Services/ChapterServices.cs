@@ -54,6 +54,7 @@ public class ChapterServices
             UpdatedAt = now,
             CreatedAt = now,
         };
+        novel.UpdatedAt = now;
         db.Chapters.Add(chapter);
         await db.SaveChangesAsync(cancellationToken);
         return mapper.Map<ChapterDto>(chapter);
@@ -127,6 +128,7 @@ public class ChapterServices
         if (anyChanges)
         {
             chapter.UpdatedAt = DateTime.UtcNow;
+            novel.UpdatedAt = DateTime.UtcNow;
             await db.SaveChangesAsync(cancellationToken);
         }
         return mapper.Map<ChapterDto>(chapter);

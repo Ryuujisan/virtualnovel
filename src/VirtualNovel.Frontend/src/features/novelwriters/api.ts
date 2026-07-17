@@ -15,3 +15,10 @@ export async function updateNovel(request : UpdateNovelRequest) {
     const response = await http.put("/novels", request);
     return response.data;
 }
+
+export async function deleteNovel(id :string) {
+    const response = await http.delete(`/novels/`,{
+        data : id
+    });
+    return response.status === 204;
+}

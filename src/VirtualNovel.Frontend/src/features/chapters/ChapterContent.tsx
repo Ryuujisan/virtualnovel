@@ -122,8 +122,7 @@ export default function ChapterContent({chapter, novel}: Props){
                 <Typography
                     component={"div"}
                     sx={{
-                        whiteSpace: "pre-line",
-                        lineHeight: 2.2,
+
                         fontSize: "1.15rem",
                     }}
                     dangerouslySetInnerHTML={{

@@ -127,7 +127,7 @@ public class NovelsController
 
     [Authorize]
     [HttpDelete]
-    public async Task<ActionResult<NovelDto>> DeleteNovel([FromBody] Guid id,
+    public async Task<ActionResult> DeleteNovel([FromBody] Guid id,
         CancellationToken cancellationToken = default)
     {
         var result = await novel.DeleteNovel(id, cancellationToken);

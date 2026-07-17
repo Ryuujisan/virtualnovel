@@ -1,82 +1,85 @@
-import { EditorContent, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import { Box, Button, ButtonGroup } from "@mui/material";
+import { Editor } from "@tinymce/tinymce-react";
+import "tinymce/tinymce";
+import "tinymce/icons/default";
+import "tinymce/themes/silver";
+import "tinymce/models/dom";
+import "tinymce/skins/ui/oxide/skin.css";
+
+import "tinymce/plugins/advlist";
+import "tinymce/plugins/autolink";
+import "tinymce/plugins/lists";
+import "tinymce/plugins/link";
+import "tinymce/plugins/image";
+import "tinymce/plugins/charmap";
+import "tinymce/plugins/preview";
+import "tinymce/plugins/searchreplace";
+import "tinymce/plugins/visualblocks";
+import "tinymce/plugins/code";
+import "tinymce/plugins/fullscreen";
+import "tinymce/plugins/table";
+import "tinymce/plugins/help";
+import "tinymce/plugins/wordcount";
 
 type ChapterEditorProps = {
-    value?: string;
+    value: string;
     onChange: (html: string) => void;
 };
 
 export default function ChapterEditor({
-                                          value = "",
+                                          value ,
                                           onChange,
                                       }: ChapterEditorProps) {
-    const editor = useEditor({
-        extensions: [StarterKit],
-        content: value,
-        onUpdate: ({ editor }) => {
-            onChange(editor.getHTML());
-        },
-    });
-
-    if (!editor) {
-        return null;
-    }
-
     return (
-        <Box>
-            <ButtonGroup size="small" sx={{ mb: 1 }}>
-                <Button
-                    variant={editor.isActive("bold") ? "contained" : "outlined"}
-                    onClick={() => editor.chain().focus().toggleBold().run()}
-                >
-                    B
-                </Button>
+        <Editor
+            licenseKey="gpl"
+            value={value}
+            onEditorChange={onChange}
+            init={{
+                height: 520,
+                menubar: false,
+                skin: false,
+                content_css: false,
 
-                <Button
-                    variant={editor.isActive("italic") ? "contained" : "outlined"}
-                    onClick={() => editor.chain().focus().toggleItalic().run()}
-                >
-                    I
-                </Button>
+                plugins: [
+                    "advlist",
+                    "autolink",
+                    "lists",
+                    "link",
+                    "image",
+                    "charmap",
+                    "preview",
+                    "searchreplace",
+                    "visualblocks",
+                    "code",
+                    "fullscreen",
+                    "table",
+                    "help",
+                    "wordcount",
+                ],
 
-                <Button
-                    onClick={() =>
-                        editor.chain().focus().toggleBulletList().run()
+                toolbar:
+                    "undo redo | blocks | bold italic underline strikethrough | " +
+                    "alignleft aligncenter alignright justify | " +
+                    "bullist numlist blockquote | link image table | " +
+                    "removeformat preview fullscreen code",
+
+                content_style: `
+                    body {
+                        background: #1c0d2d;
+                        color: #ffffff;
+                        font-family: Arial, sans-serif;
+                        font-size: 18px;
+                        line-height: 2;
+                        padding: 20px;
                     }
-                >
-                    List
-                </Button>
 
-                <Button
-                    onClick={() =>
-                        editor.chain().focus().toggleBlockquote().run()
+                    blockquote {
+                        border-left: 4px solid #ab20c5;
+                        margin-left: 0;
+                        padding-left: 16px;
                     }
-                >
-                    Quote
-                </Button>
-            </ButtonGroup>
-
-            <Box
-                sx={{
-                    border: 1,
-                    borderColor: "divider",
-                    borderRadius: 1,
-                    minHeight: 400,
-                    p: 2,
-
-                    "& .tiptap": {
-                        minHeight: 360,
-                        outline: "none",
-                    },
-
-                    "& .tiptap p": {
-                        my: 1.5,
-                    },
-                }}
-            >
-                <EditorContent editor={editor} />
-            </Box>
-        </Box>
+                `,
+            }}
+        />
     );
 }

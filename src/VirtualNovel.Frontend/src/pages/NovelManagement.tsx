@@ -6,10 +6,12 @@ import {Button, Container, Stack, Typography} from "@mui/material";
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import {Link} from "react-router-dom";
 import NovelFeedCard from "../features/home/components/NovelFeedCard.tsx";
+import {useDeleteNovel} from "../shared/hooks/useDeleteNovel.ts";
 
 
 export default function NovelManagement() {
     const user = useUserStore(x=>x.user);
+    const onDeleteNovel = useDeleteNovel();
     const {
         data,
         fetchNextPage,
@@ -56,7 +58,6 @@ export default function NovelManagement() {
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
     const novels = data?.pages.flatMap((page) => page) ?? [];
-
     if (isLoading) {
         return <Typography sx={{p: 2}}>Loading novels...</Typography>;
     }
@@ -80,7 +81,7 @@ export default function NovelManagement() {
             {isLoading && (<Typography>Loading content</Typography>)}
             <Stack spacing={2} sx={{p: 2}}>
             {novels.map(novel => (
-                <NovelFeedCard key={novel.id} {...novel}/>
+                <NovelFeedCard onDelete={() =>void onDeleteNovel(novel.id)} key={novel.id}  data={novel} />
             ))}
             </Stack>
         </Container>

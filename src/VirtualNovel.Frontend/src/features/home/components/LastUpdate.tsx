@@ -3,13 +3,14 @@ import {useInfiniteQuery} from "@tanstack/react-query";
 import {useEffect, useRef} from "react";
 import NovelFeedCard from "./NovelFeedCard.tsx";
 import {getNovels} from "../api.ts";
+import {useDeleteNovel} from "../../../shared/hooks/useDeleteNovel.ts";
 
 export default function LastUpdate() {
     const filters = {
         sort: "updatedAt",
         pageSize: 20,
     };
-
+    const onDeleteNovel = useDeleteNovel();
     const {
         data,
         fetchNextPage,
@@ -88,7 +89,8 @@ export default function LastUpdate() {
                 {novels.map((novel) => (
                     <NovelFeedCard
                         key={novel.id}
-                        {...novel}
+                        data={novel}
+                        onDelete={() =>void onDeleteNovel(novel.id)}
                     />
                 ))}
 

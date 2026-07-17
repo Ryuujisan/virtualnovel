@@ -4,7 +4,6 @@ import {useEffect, useState} from "react";
 import {toast} from "react-toastify";
 import {createChapter, getChapterById} from "../features/chapters/api.ts";
 import {Box, Button, Stack, TextField} from "@mui/material";
-import {Spa} from "@mui/icons-material";
 
 
 export default function ChapterWriter() {
@@ -82,10 +81,10 @@ export default function ChapterWriter() {
                 onChange={(event) =>
                     setFormData((current) => ({...current, title: event.target.value}))}
             />
-        <ChapterEditor onChange={(content: string) => {
-            setFormData({...formData, content: content})
+        <ChapterEditor value={formData.content} onChange={(content: string) => {
+             setFormData({...formData, content: content})
         }}/>
-                <Button sx={{alignSelf:"end"}} variant={"outlined"} onClick={(e) => {
+                <Button sx={{alignSelf:"end"}} variant={"outlined"}  onClick={(e) => {
                     e.preventDefault();
                     void create();
                 }}>Create</Button>

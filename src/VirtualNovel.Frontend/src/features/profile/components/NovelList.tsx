@@ -3,6 +3,7 @@ import {useInfiniteQuery} from "@tanstack/react-query";
 import {useEffect, useRef} from "react";
 import {getNovels} from "../../home/api.ts";
 import NovelFeedCard from "../../home/components/NovelFeedCard.tsx";
+import {useDeleteNovel} from "../../../shared/hooks/useDeleteNovel.ts";
 
 interface Props {
     authorId: string;
@@ -11,6 +12,7 @@ interface Props {
 const PAGE_SIZE = 20;
 
 export default function NovelList({authorId}: Props) {
+    const onDeleteNovel = useDeleteNovel();
     const {
         data,
         fetchNextPage,
@@ -68,11 +70,10 @@ export default function NovelList({authorId}: Props) {
     if (novels.length === 0) {
         return <Typography sx={{p: 2}}>This author has no novels yet.</Typography>;
     }
-
     return (
         <Stack spacing={2} sx={{p: 2}}>
             {novels.map((novel) => (
-                <NovelFeedCard key={novel.id} {...novel}/>
+                <NovelFeedCard key={novel.id} data={novel} onDelete={() => void onDeleteNovel(novel.id)}/>
             ))}
 
             <Box

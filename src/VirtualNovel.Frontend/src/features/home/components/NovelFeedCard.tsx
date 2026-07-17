@@ -6,7 +6,7 @@ import {
     CardActionArea,
     CardContent,
     CardMedia,
-    Chip,
+    Chip, IconButton,
     Rating,
     Stack,
     Typography,
@@ -16,8 +16,17 @@ import EditIcon from "@mui/icons-material/EditOutlined";
 import {useNavigate} from "react-router-dom";
 import {formatUpdatedAt} from "../../../shared/helper.ts";
 import {useUserStore} from "../../../store/userStore.ts";
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
-export default function NovelFeedCard(data: NovelFeed) {
+interface Props {
+    data: NovelFeed;
+    onDelete: (id: string) => void;
+}
+
+export default function NovelFeedCard({
+                                          data,
+                                          onDelete
+                                      }: Props)  {
     const navigate = useNavigate();
     const currentUser = useUserStore((state) => state.user);
     const author = data.author;
@@ -128,6 +137,8 @@ export default function NovelFeedCard(data: NovelFeed) {
                             </Button>
                         )}
                         </Stack>
+                        <Stack direction={"row"} spacing={2} sx={{   alignItems:"center",
+                            justifyContent:"flex-end"}}>
                         <Chip
                             label={data.status}
                             size="small"
@@ -137,6 +148,18 @@ export default function NovelFeedCard(data: NovelFeed) {
                                     : "primary"
                             }
                         />
+                            {canEdit && (
+                                <IconButton
+                                    color="error"
+                                    onClick={(event) => {
+                                        event.stopPropagation();
+                                        void onDelete(data.id);
+                                    }}
+                                >
+                                    <DeleteForeverIcon />
+                                </IconButton>
+                            )}
+                        </Stack>
                     </Stack>
 
                     {/* Gatunki */}
