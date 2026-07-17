@@ -1,5 +1,5 @@
 import {http} from "../../shared/api/http.ts";
-import type {CreateChapterRequest, UpdateChapterRequest} from "./request.ts";
+import type {CreateChapterRequest, ReorderChapterRequest, UpdateChapterRequest} from "./request.ts";
 import type {ChapterDto} from "./type.ts";
 
 export async function getChapter(id: string, order: string) :Promise<ChapterDto> {
@@ -20,4 +20,13 @@ export async function createChapter(req: CreateChapterRequest) : Promise<Chapter
 export async function updateChapter(req: UpdateChapterRequest) : Promise<ChapterDto>  {
     const response = await http.put<ChapterDto>(`/chapters/`, req);
     return response.data
+}
+
+export async function reorderChapter(req: ReorderChapterRequest): Promise<ChapterDto> {
+    const response = await http.put<ChapterDto>("/chapters/order", req);
+    return response.data;
+}
+
+export async function deleteChapter(chapterId: string): Promise<void> {
+    await http.delete("/chapters", {params: {chapterId}});
 }

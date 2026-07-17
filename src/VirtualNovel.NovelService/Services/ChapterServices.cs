@@ -101,27 +101,7 @@ public class ChapterServices
 
         if (request.Order != -1 && chapter.Order != request.Order)
         {
-            var oldOrder = chapter.Order;
-            var newOrder = request.Order;
-
-            if (newOrder < oldOrder)
-            {
-                foreach (var item in novel.Chapters
-                             .Where(c => c.Order >= newOrder && c.Order < oldOrder))
-                {
-                    item.Order++;
-                }
-            }
-            else if (newOrder > oldOrder)
-            {
-                foreach (var item in novel.Chapters
-                             .Where(c => c.Order > oldOrder && c.Order <= newOrder))
-                {
-                    item.Order--;
-                }
-            }
-
-            chapter.Order = newOrder;
+            ShiftChapter(novel.Chapters, chapter, request.Order);
             anyChanges = true;
         }
 
@@ -131,6 +111,38 @@ public class ChapterServices
             novel.UpdatedAt = DateTime.UtcNow;
             await db.SaveChangesAsync(cancellationToken);
         }
+        return mapper.Map<ChapterDto>(chapter);
+    }
+
+    public async Task<ChapterDto?> ReorderChapter(ReorderChapterRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        var novel = await db.Novels
+            .Include(item => item.Chapters)
+            .FirstOrDefaultAsync(
+                item => item.Chapters.Any(chapter => chapter.Id == request.ChapterId),
+                cancellationToken);
+
+        if (novel is null ||
+            novel.AuthorId != currentUser.FirebaseUid ||
+            request.NewOrder < 1 ||
+            request.NewOrder > novel.Chapters.Count)
+        {
+            return null;
+        }
+
+        var chapter = novel.Chapters.Single(item => item.Id == request.ChapterId);
+        if (chapter.Order == request.NewOrder)
+        {
+            return mapper.Map<ChapterDto>(chapter);
+        }
+
+        var now = DateTime.UtcNow;
+        ShiftChapter(novel.Chapters, chapter, request.NewOrder);
+        chapter.UpdatedAt = now;
+        novel.UpdatedAt = now;
+        await db.SaveChangesAsync(cancellationToken);
+
         return mapper.Map<ChapterDto>(chapter);
     }
 
@@ -148,16 +160,41 @@ public class ChapterServices
         }
 
         var chapter = novel.Chapters.Single(chapter => chapter.Id == chapterId);
+        var now = DateTime.UtcNow;
         foreach (var followingChapter in novel.Chapters.Where(
                      item => item.Order > chapter.Order))
         {
             followingChapter.Order--;
-            followingChapter.UpdatedAt = DateTime.UtcNow;
+            followingChapter.UpdatedAt = now;
         }
 
+        novel.UpdatedAt = now;
         db.Chapters.Remove(chapter);
         await db.SaveChangesAsync(cancellationToken);
 
         return true;
+    }
+
+    private static void ShiftChapter(ICollection<Chapter> chapters, Chapter chapter, int newOrder)
+    {
+        var oldOrder = chapter.Order;
+        if (newOrder < oldOrder)
+        {
+            foreach (var item in chapters.Where(item =>
+                         item.Order >= newOrder && item.Order < oldOrder))
+            {
+                item.Order++;
+            }
+        }
+        else
+        {
+            foreach (var item in chapters.Where(item =>
+                         item.Order > oldOrder && item.Order <= newOrder))
+            {
+                item.Order--;
+            }
+        }
+
+        chapter.Order = newOrder;
     }
 }

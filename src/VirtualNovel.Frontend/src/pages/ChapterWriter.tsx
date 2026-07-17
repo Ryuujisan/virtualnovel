@@ -2,7 +2,7 @@ import ChapterEditor from "../features/chapters/components/ChapterEditor.tsx";
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {toast} from "react-toastify";
-import {createChapter, getChapterById} from "../features/chapters/api.ts";
+import {createChapter, getChapterById, updateChapter} from "../features/chapters/api.ts";
 import {Box, Button, Stack, TextField} from "@mui/material";
 
 
@@ -15,13 +15,14 @@ export default function ChapterWriter() {
     })
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate();
+    const isCreateMode = chapterId === undefined || chapterId === "";
     useEffect(() => {
         if (id === undefined || id === "") {
             toast.error("Novel is required");
            // navigate("/create");
         }
 
-        if(chapterId === undefined || chapterId === "") {
+        if(isCreateMode) {
             return;
         }
         setIsLoading(true);
@@ -43,16 +44,27 @@ export default function ChapterWriter() {
         }
         void fetchChapter()
     },[id,chapterId])
+
     async function create() {
         setIsLoading(true);
         try {
-            await createChapter({
-                chapterDescription : "",
-                content : formData.content,
-                chapterName : formData.title,
-                novelId : id!
-            })
-            toast.success("Chapter created");
+            if(isCreateMode) {
+                await createChapter({
+                    chapterDescription: "",
+                    content: formData.content,
+                    chapterName: formData.title,
+                    novelId: id!
+                })
+                toast.success("Chapter created");
+            } else {
+                await updateChapter({
+                    chapterDescription : formData.description,
+                    content : formData.content,
+                    id : chapterId!,
+                    chapterName : formData.title
+                })
+                toast.success("Chapter updated");
+            }
             navigate(`/novelupdate/${id}`)
         } catch (e) {
 
@@ -87,7 +99,7 @@ export default function ChapterWriter() {
                 <Button sx={{alignSelf:"end"}} variant={"outlined"}  onClick={(e) => {
                     e.preventDefault();
                     void create();
-                }}>Create</Button>
+                }}>{isCreateMode ? "Create" : "Update"}</Button>
             </Stack>
         </Box>
     )

@@ -11,7 +11,7 @@ import {
     Tooltip,
     Typography,
 } from "@mui/material";
-import {useEffect, useState} from "react";
+import {Fragment, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import {createNovel, updateNovel} from "../../features/novelwriters/api.ts";
@@ -20,6 +20,7 @@ import {getNovel} from "../../features/novels/api.ts";
 import {uploadFile} from "../api/image.api.ts";
 import {bytesToBase64} from "../helper.ts";
 import {ImageUploader} from "./ImageUploader.tsx";
+import ChapterManager from "../../features/chapters/components/ChapterManager.tsx";
 
 const ROMANCE_TYPES = ["None", "Hetero", "Yuri", "Yaoi", "Mixed"];
 const WORK_TYPES = ["Original", "Fanfiction"];
@@ -86,6 +87,7 @@ export default function NovelEditor({mode, novelId}: NovelEditorProps) {
     const [coverRemoved, setCoverRemoved] = useState(false);
     const [loadedNovel, setLoadedNovel] = useState<NovelDto | null>(null);
     const [isLoading, setIsLoading] = useState(isUpdate);
+    const [loadError, setLoadError] = useState<string | null>(null);
 
     useEffect(() => {
         let ignoreResult = false;
@@ -111,6 +113,7 @@ export default function NovelEditor({mode, novelId}: NovelEditorProps) {
         }
 
         setIsLoading(true);
+        setLoadError(null);
 
         async function loadNovel() {
             try {
@@ -132,8 +135,7 @@ export default function NovelEditor({mode, novelId}: NovelEditorProps) {
             } catch (error) {
                 if (ignoreResult) return;
                 console.error(error);
-                toast.error("Failed to load novel.");
-                navigate("/create", {replace: true});
+                setLoadError("The novel and its chapters could not be loaded.");
             } finally {
                 if (!ignoreResult) setIsLoading(false);
             }
@@ -145,6 +147,37 @@ export default function NovelEditor({mode, novelId}: NovelEditorProps) {
             ignoreResult = true;
         };
     }, [isUpdate, navigate, novelId]);
+
+    const refreshNovel = async () => {
+        if (!novelId) return;
+        const novel = await getNovel(novelId);
+        setLoadedNovel(novel);
+        setLoadError(null);
+    };
+
+    const retryNovelLoad = async () => {
+        setIsLoading(true);
+        setLoadError(null);
+        try {
+            if (!novelId) return;
+            const novel = await getNovel(novelId);
+            setLoadedNovel(novel);
+            setFormData({
+                title: novel.title,
+                description: novel.description,
+                romanceType: novel.romanceType,
+                workType: novel.workType,
+                status: novel.status,
+            });
+            setSelectedGenres(novel.genres);
+            setLoadError(null);
+        } catch (error) {
+            console.error(error);
+            setLoadError("The novel and its chapters could not be loaded.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const validate = () => {
         if (!formData.title.trim()) {
@@ -243,6 +276,7 @@ export default function NovelEditor({mode, novelId}: NovelEditorProps) {
     };
 
     return (
+        <Fragment>
         <Box
             component="section"
             aria-labelledby="novel-details-heading"
@@ -402,5 +436,16 @@ export default function NovelEditor({mode, novelId}: NovelEditorProps) {
                 </Stack>
             </Box>
         </Box>
+        {isUpdate && novelId && (
+            <ChapterManager
+                novel={loadedNovel}
+                novelId={novelId}
+                isLoading={isLoading && loadedNovel === null}
+                error={loadError}
+                onRetry={() => void retryNovelLoad()}
+                onRefresh={refreshNovel}
+            />
+        )}
+        </Fragment>
     );
 }

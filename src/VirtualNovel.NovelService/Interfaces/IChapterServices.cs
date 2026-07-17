@@ -9,5 +9,6 @@ public interface IChapterServices
     public Task<ChapterDto?> GetChapter(Guid novelId, int order, CancellationToken cancellationToken = default);
     public Task<ChapterDto?> CreateChapter(CreateChapterRequest request, CancellationToken cancellationToken = default);
     public Task<ChapterDto?> UpdateChapter(UpdateChapterRequest request, CancellationToken cancellationToken = default);
+    public Task<ChapterDto?> ReorderChapter(ReorderChapterRequest request, CancellationToken cancellationToken = default);
     public Task<bool> DeleteChapter(Guid chapterId, CancellationToken cancellationToken = default);
 }

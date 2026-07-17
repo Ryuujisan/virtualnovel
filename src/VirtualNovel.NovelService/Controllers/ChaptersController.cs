@@ -43,6 +43,15 @@ public class ChaptersController(IChapterServices chapter) : ControllerBase
     }
 
     [Authorize]
+    [HttpPut("order")]
+    public async Task<IActionResult> ReorderChapter(ReorderChapterRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        var chapterDto = await chapter.ReorderChapter(request, cancellationToken);
+        return chapterDto is null ? NotFound() : Ok(chapterDto);
+    }
+
+    [Authorize]
     [HttpDelete]
     public async Task<IActionResult> DeleteChapter(Guid chapterId, CancellationToken cancellationToken = default)
     {

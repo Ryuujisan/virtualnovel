@@ -1,5 +1,5 @@
 export type ChapterDto = {
-    NovelId : string,
+    novelId : string,
     title : string,
     content : string,
     order : number,

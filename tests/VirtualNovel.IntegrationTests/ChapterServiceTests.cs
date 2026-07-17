@@ -58,6 +58,41 @@ public sealed class ChapterServiceTests(NovelServiceFactory factory)
     }
 
     [Fact]
+    public async Task Reorder_Chapter_Preserves_Content_And_Shifts_Orders()
+    {
+        var created = await NovelTestData.CreateNovelAsync(factory);
+        var first = await CreateChapterAsync(created, "First");
+        var second = await CreateChapterAsync(created, "Second");
+        var third = await CreateChapterAsync(created, "Third");
+        var request = new ReorderChapterRequest(third.Id, 1);
+
+        var response = await created.Client.PutAsJsonAsync("api/chapters/order", request);
+        response.EnsureSuccessStatusCode();
+        var novel = await created.Client.GetFromJsonAsync<NovelDto>(
+            $"api/novels/{created.Novel.Id}");
+        var chapter = await created.Client.GetFromJsonAsync<ChapterDto>(
+            $"api/chapters/{third.Id}");
+
+        Assert.Equal([third.Id, first.Id, second.Id], novel!.Chapters.Select(item => item.Id));
+        Assert.Equal([1, 2, 3], novel.Chapters.Select(item => item.Order));
+        Assert.Equal("Third", chapter!.Title);
+        Assert.Equal("Content for Third", chapter.Content);
+    }
+
+    [Fact]
+    public async Task Reorder_Chapter_Rejects_Invalid_Order()
+    {
+        var created = await NovelTestData.CreateNovelAsync(factory);
+        var chapter = await CreateChapterAsync(created, "First");
+
+        var response = await created.Client.PutAsJsonAsync(
+            "api/chapters/order",
+            new ReorderChapterRequest(chapter.Id, 2));
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
     public async Task Delete_Chapter_Closes_Order_Gap()
     {
         var created = await NovelTestData.CreateNovelAsync(factory);
@@ -75,6 +110,7 @@ public sealed class ChapterServiceTests(NovelServiceFactory factory)
         Assert.Equal(2, remaining.Length);
         Assert.Equal([1, 2], remaining.Select(chapter => chapter.Order));
         Assert.Equal(third.Id, remaining[1].Id);
+        Assert.True(novel.UpdatedAt > created.Novel.UpdatedAt);
     }
 
     [Fact]
