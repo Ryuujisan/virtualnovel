@@ -16,7 +16,7 @@ RUN apt-get update \
     && apt-get install --yes --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
 
-ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_URLS=http://0.0.0.0:8080
 EXPOSE 8080
 
 COPY --from=build /app/publish .
@@ -26,4 +26,3 @@ HEALTHCHECK --interval=15s --timeout=5s --retries=5 \
     CMD curl --fail --silent http://localhost:8080/health || exit 1
 
 ENTRYPOINT ["dotnet", "VirtualNovel.Gateway.dll"]
-

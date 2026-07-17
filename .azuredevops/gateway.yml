@@ -1,24 +1,23 @@
-﻿trigger:
+trigger:
   branches:
     include:
       - master
   paths:
     include:
-      - src/VirtualNovel.Frontend/**
+      - src/VirtualNovel.Gateway/**
 
 pool:
   vmImage: ubuntu-latest
 
 variables:
-  imageRepository: virtualnovel-frontend
-  dockerfilePath: src/VirtualNovel.Frontend/Dockerfile
-  tag: $(Build.BuildId)
+  imageRepository: virtualnovel-gateway
+  dockerfilePath: src/VirtualNovel.Gateway/Dockerfile
 
 steps:
   - checkout: self
 
   - task: Docker@2
-    displayName: Build and push frontend
+    displayName: Build and push Gateway image
     inputs:
       command: buildAndPush
       containerRegistry: virtualnovel-acr
@@ -26,5 +25,5 @@ steps:
       dockerfile: $(dockerfilePath)
       buildContext: $(Build.SourcesDirectory)
       tags: |
-        $(tag)
+        $(Build.BuildId)
         latest

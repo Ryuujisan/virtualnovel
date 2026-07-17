@@ -26,7 +26,7 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_URLS: http://0.0.0.0:8080
       ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
       ConnectionStrings__Database: ${DATABASE_CONNECTION_STRING:?Set DATABASE_CONNECTION_STRING in .env}
       Firebase__ProjectId: ${FIREBASE_PROJECT_ID:-demo-virtualnovel}
@@ -47,7 +47,7 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_URLS: http://0.0.0.0:8080
       ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
       ConnectionStrings__Database: ${DATABASE_CONNECTION_STRING:?Set DATABASE_CONNECTION_STRING in .env}
       Firebase__ProjectId: ${FIREBASE_PROJECT_ID:-demo-virtualnovel}
@@ -72,7 +72,7 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_URLS: http://0.0.0.0:8080
       ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
       Firebase__ProjectId: ${FIREBASE_PROJECT_ID:-demo-virtualnovel}
       Cloudinary__CloudName: ${CLOUDINARY_CLOUD_NAME:-}
@@ -95,7 +95,7 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_URLS: http://0.0.0.0:8080
       ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
       Firebase__ProjectId: ${FIREBASE_PROJECT_ID:-demo-virtualnovel}
       Cors__AllowedOrigins__0: http://localhost:5173

@@ -6,6 +6,10 @@ using VirtualNovel.ImageService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+});
+
 builder.Services.AddFirebaseAuthentication(
     builder.Configuration,
     builder.Environment);

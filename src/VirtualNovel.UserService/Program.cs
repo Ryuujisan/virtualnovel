@@ -9,6 +9,10 @@ using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+});
+
 builder.Services.AddFirebaseAuthentication(builder.Configuration, builder.Environment);
 builder.Services.AddPostgres<UserDbContext>(builder.Configuration);
 builder.Services.AddScoped<IUserProfileService, UserProfileService>();

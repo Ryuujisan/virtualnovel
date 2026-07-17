@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+});
+
 builder.Services
     .AddControllers()
     .AddEnumSerialization();
