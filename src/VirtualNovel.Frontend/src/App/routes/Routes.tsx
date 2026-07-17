@@ -12,6 +12,7 @@ import NovelManagement from "../../pages/NovelManagement.tsx";
 import ProtectedRoute from "../../layauts/ProtectedRoute.tsx";
 import NovelWriter from "../../pages/NovelWriter.tsx";
 import ChapterWriter from "../../pages/ChapterWriter.tsx";
+import NovelUpdater from "../../pages/NovelUpdater.tsx";
 
 export const routes = createBrowserRouter([
     {
@@ -28,7 +29,6 @@ export const routes = createBrowserRouter([
             {path:"/novels/:novelId/chapter/:order", element: <Chapter />},
             {path:"/notfound", element: <NotFound />},
             { path: "*", element: <Navigate to="/notfound" replace />},
-            {path:"/chapterwriter", element: <ChapterWriter />},
         ],
     },
     {
@@ -36,6 +36,8 @@ export const routes = createBrowserRouter([
         children: [
             {path:"/create", element: <NovelManagement />},
             {path:"/novelwriter", element: <NovelWriter />},
+            {path:"/novelupdate/:id", element: <NovelUpdater />},
+            {path:"/novel/:id/chaptereditor/:chapterId?", element: <ChapterWriter />},
 
         ]
     }

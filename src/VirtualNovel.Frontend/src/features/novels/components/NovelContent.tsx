@@ -30,7 +30,7 @@ export default function NovelContent({novel}:NovelProps) {
             <Grid container spacing={1}>
                 <Grid size={2}>
                     <Stack>
-                        <img src={novel.coverUrl || undefined} alt={"cover"} />
+                        <img src={novel.coverUrl || "/nocover.png"} alt={"cover"} />
                         <Rating name="half-rating-read" defaultValue={novel?.rating ?? 0} value={novel?.rating ?? 0} precision={0.5}/>
                     </Stack>
                 </Grid>
@@ -49,7 +49,7 @@ export default function NovelContent({novel}:NovelProps) {
                                 startIcon={<EditIcon />}
                                 onClick={(event) => {
                                     event.stopPropagation();
-                                    navigate(`/novelwriter?novelId=${novel.id}`);
+                                    navigate(`/novelupdate/${novel.id}`)
                                 }}
                             >
                                 Edit

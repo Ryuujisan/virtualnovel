@@ -120,14 +120,16 @@ export default function ChapterContent({chapter, novel}: Props){
                 }}
             >
                 <Typography
+                    component={"div"}
                     sx={{
                         whiteSpace: "pre-line",
                         lineHeight: 2.2,
                         fontSize: "1.15rem",
                     }}
-                >
-                    {chapter?.content}
-                </Typography>
+                    dangerouslySetInnerHTML={{
+                        __html: chapter.content
+                    }}
+                />
             </Box>
             <Stack direction={"row"} spacing={2} sx={{alignSelf:"end", margin:1}}>
                 {

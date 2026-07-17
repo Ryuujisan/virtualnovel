@@ -60,6 +60,15 @@ export function ImageUploader({
         };
     }, [preview]);
 
+    useEffect(() => {
+        setPreview((current) => {
+            if (current?.isObjectUrl) return current;
+            return initialImageUrl
+                ? {url: initialImageUrl, isObjectUrl: false}
+                : null;
+        });
+    }, [initialImageUrl]);
+
     const resetInput = () => {
         if (fileInputRef.current) fileInputRef.current.value = "";
     };

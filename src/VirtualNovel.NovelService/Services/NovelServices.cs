@@ -152,7 +152,12 @@ public class NovelServices
 
         var anyChanges = false;
 
-        if (request.CoverUrl is not null &&
+        if (request.RemoveCover && novel.CoverUrl is not null)
+        {
+            novel.CoverUrl = null;
+            anyChanges = true;
+        }
+        else if (request.CoverUrl is not null &&
             request.CoverUrl != novel.CoverUrl)
         {
             novel.CoverUrl = request.CoverUrl;
@@ -163,6 +168,13 @@ public class NovelServices
             romanceType != novel.RomanceType)
         {
             novel.RomanceType = romanceType;
+            anyChanges = true;
+        }
+
+        if (request.Status is { } status &&
+            status != novel.Status)
+        {
+            novel.Status = status;
             anyChanges = true;
         }
 

@@ -16,4 +16,6 @@ export type UpdateNovelRequest = {
     genres? : string[],
     workType? : string,
     romanceType? : string,
+    status? : string,
+    removeCover? : boolean,
 }

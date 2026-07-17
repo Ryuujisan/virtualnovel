@@ -10,7 +10,7 @@ export default function NovelCard({id, coverUrl, title, rating} : NovelCardInfo 
                 to={`/novels/${id}`}>
                 <CardMedia
                     component="img"
-                    image={coverUrl}
+                    image={coverUrl ?? "/cover.png"}
                     alt="Cover"
                 />
                 <CardContent>

@@ -10,4 +10,6 @@ public record UpdateNovelRequest(
     string? CoverUrl = null,
     EGenre[]? Genres = null,
     EWorkType? WorkType = null,
-    ERomanceType? RomanceType = null);
+    ERomanceType? RomanceType = null,
+    EStatus? Status = null,
+    bool RemoveCover = false);

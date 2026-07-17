@@ -57,7 +57,7 @@ export default function NovelFeedCard(data: NovelFeed) {
                 >
                     <CardMedia
                         component="img"
-                        image={data.coverUrl || undefined}
+                        image={data.coverUrl || "/nocover.png"}
                         alt={`Cover of ${data.title}`}
                         sx={{
                             width: "100%",
@@ -121,7 +121,7 @@ export default function NovelFeedCard(data: NovelFeed) {
                                 startIcon={<EditIcon />}
                                 onClick={(event) => {
                                     event.stopPropagation();
-                                    navigate(`/novelwriter?novelId=${data.id}`);
+                                    navigate(`/novelupdate/${data.id}`);
                                 }}
                             >
                                 Edit

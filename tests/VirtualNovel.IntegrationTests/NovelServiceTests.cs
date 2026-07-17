@@ -138,7 +138,8 @@ public sealed class NovelServiceTests(NovelServiceFactory factory)
             "https://example.com/updated-cover.jpg",
             [EGenre.SciFi, EGenre.Adventure],
             EWorkType.Fanfiction,
-            ERomanceType.Hetero);
+            ERomanceType.Hetero,
+            Status: EStatus.Complete);
 
         var response = await created.Client.PutAsJsonAsync("api/novels", request);
         response.EnsureSuccessStatusCode();
@@ -150,6 +151,7 @@ public sealed class NovelServiceTests(NovelServiceFactory factory)
         Assert.Equal(request.CoverUrl, novel.CoverUrl);
         Assert.Equal(request.WorkType, novel.WorkType);
         Assert.Equal(request.RomanceType, novel.RomanceType);
+        Assert.Equal(request.Status, novel.Status);
         Assert.True(request.Genres!.ToHashSet().SetEquals(novel.Genres));
     }
 
@@ -172,6 +174,24 @@ public sealed class NovelServiceTests(NovelServiceFactory factory)
         Assert.Equal(created.Novel.WorkType, novel.WorkType);
         Assert.Equal(created.Novel.RomanceType, novel.RomanceType);
         Assert.True(created.Novel.Genres.ToHashSet().SetEquals(novel.Genres));
+    }
+
+    [Fact]
+    public async Task Update_Novel_Can_Remove_Cover()
+    {
+        var created = await NovelTestData.CreateNovelAsync(factory);
+        var request = new UpdateNovelRequest(
+            created.Novel.Id,
+            RemoveCover: true);
+
+        var response = await created.Client.PutAsJsonAsync("api/novels", request);
+        response.EnsureSuccessStatusCode();
+        var novel = await response.Content.ReadFromJsonAsync<NovelDto>();
+
+        Assert.NotNull(novel);
+        Assert.Empty(novel.CoverUrl);
+        Assert.Equal(created.Novel.Title, novel.Title);
+        Assert.Equal(created.Novel.Description, novel.Description);
     }
 
     [Fact]
